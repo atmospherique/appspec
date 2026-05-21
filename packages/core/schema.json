@@ -66,6 +66,7 @@
         },
         "sourceTimeline": {
           "type": "array",
+          "description": "Append-only audit trail. Each entry records one edit. W3C PROV alignment: source maps to prov:wasAssociatedWith (the kind of agent), actorId maps to a specific prov:Agent URN, at maps to prov:atTime, note maps to prov:value. Consumers can mechanically transform sourceTimeline into a PROV-N document via the documented mapping in spec.md § 5.",
           "items": {
             "type": "object",
             "properties": {
@@ -78,6 +79,10 @@
               },
               "note": {
                 "type": "string"
+              },
+              "actorId": {
+                "type": "string",
+                "description": "Optional. PROV-aligned specific-actor identifier. For human-edit, an email or user URN (e.g. 'user:brad@atmospherique.com'). For mockingbird-ai / mhb-push / etc., a model + session URN (e.g. 'agent:opus-4.7/session-abc123'). Enables PROV's prov:wasAttributedTo to point at a specific entity, not just the source category. Omit when only the source category is known."
               }
             },
             "required": [
@@ -845,6 +850,20 @@
     "id": {
       "type": "string",
       "pattern": "^proj_[a-zA-Z0-9_]+$"
+    },
+    "originMissionId": {
+      "type": "string",
+      "pattern": "^msn_[a-zA-Z0-9_]+$",
+      "description": "Optional. Identifier of the Mission this AppSpec was originally created for. Mission HUD family integration: a Mission flows across Discovery / Designer / Builder / Business products; the originMissionId anchors this AppSpec to the Mission that initiated its design work. Standalone use (no Mission HUD Mission system) can omit this field."
+    },
+    "relevantMissions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^msn_[a-zA-Z0-9_]+$"
+      },
+      "uniqueItems": true,
+      "description": "Optional. Additional Missions this AppSpec (or its components) is relevant to. Enables many-to-many association — a curated AppSpec built for Mission A can be referenced by Mission B without duplication. Empty / omitted means single-Mission scope."
     },
     "identity": {
       "$ref": "#/$defs/Identity"

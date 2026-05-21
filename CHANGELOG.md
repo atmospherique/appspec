@@ -10,16 +10,38 @@ Schema versions are tracked separately from release versions: a v10.x release ma
 
 ## [Unreleased]
 
-### Planned for v10.1.0
+### Planned for v10.1.0 stable
 
-- `originMissionId` field on root for Mission HUD family integration
-- `relevantMissions[]` association list for many-to-many mission reuse
-- `sourceTimeline` alignment with W3C PROV shape (interop with Discovery + Builder audit chains)
-- `@missionhud/appspec-cli` — terminal interface
 - Reference adapter for Figma round-trip
 - Reference adapter for React + DTCG → Tailwind theme generation
 - Conformance test suite (Core tier first; Standard + Extended in v10.2)
 - npm publish (the package code exists; not yet `npm publish`ed)
+
+---
+
+## [10.1.0-alpha.2] — 2026-05-21 (CLI + family-context schema additions)
+
+Seventh package shipped and schema additions for Mission HUD family integration.
+
+### Added
+
+- `@missionhud/appspec-cli` — `appspec` command-line tool with `validate`, `lint`, `check`, `migrate`, `info` commands. Colored output, proper exit codes for CI, programmatic API for embedding.
+
+### Schema additions (additive, backwards-compatible — schema version stays 10.0.0)
+
+- **Root `originMissionId`** (optional, pattern `^msn_[a-zA-Z0-9_]+$`) — identifier of the Mission this AppSpec was originally created for. Mission HUD family integration; standalone use can omit.
+- **Root `relevantMissions[]`** (optional, array of mission ids) — enables many-to-many association so a curated AppSpec built for one Mission can be referenced by others without duplication.
+- **`Provenance.sourceTimeline[].actorId`** (optional) — PROV-aligned specific-actor identifier (e.g. `user:brad@atmospherique.com` or `agent:opus-4.7/session-abc123`). Enables W3C PROV `wasAttributedTo` to point at a specific entity, not just the source category.
+- **`sourceTimeline` description** explicitly documents the PROV mapping: source → `wasAssociatedWith`, actorId → `wasAttributedTo`, at → `atTime`, note → `value`. Consumers can mechanically transform sourceTimeline into PROV-N via the documented mapping.
+
+These are purely additive; existing v10.0.0 specs remain valid. The schema version metadata stays at `10.0.0` per the convention that only contract-breaking changes bump the schema version (additive optional fields don't qualify).
+
+### Tested
+
+- All 7 packages compose and validate end-to-end
+- CLI: validate, lint, check, migrate, info all working with correct exit codes
+- New schema fields validate; invalid mission-id pattern rejected
+- Existing minimal-mobile.json example still validates
 
 ---
 
