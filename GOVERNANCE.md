@@ -4,6 +4,7 @@
 
 AppSpec is currently **Mission HUD-stewarded** under single-maintainer governance.
 
+- **Legal entity / copyright holder**: Atmospherique Pty Ltd (Australia), publishing under the Mission HUD product family
 - **Maintainer**: Mission HUD (`@bradmanners` is the working steward)
 - **Decision-making**: maintainer-led with mandatory public comment for any change touching `spec/v10/schema.json` or `spec/v10/spec.md`
 - **Tie-breakers**: maintainer

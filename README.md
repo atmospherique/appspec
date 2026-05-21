@@ -179,3 +179,7 @@ This follows the W3C / OpenAPI / JSON Schema pattern: specs are content (CC-BY);
 ---
 
 *"AppSpec" as a term has prior art across multiple unrelated projects (AWS CodeDeploy, Windows, etc.) and is not trademarked. The branded variant maintained here is **Mission HUD AppSpec**. External implementations are welcome to claim "Compatible with AppSpec v10" without endorsement; "Mission HUD AppSpec" implies coordination with the maintainer.*
+
+---
+
+*AppSpec is published by **Atmospherique Pty Ltd** (Australia) under the Mission HUD product family. The specification is licensed under [CC-BY 4.0](LICENSE-CC-BY-4.0); the reference implementation under [MIT](LICENSE-MIT).*
