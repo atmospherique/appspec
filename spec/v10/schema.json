@@ -1,0 +1,944 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/missionhud/appspec/raw/main/spec/v10/schema.json",
+  "title": "Mission HUD AppSpec",
+  "description": "Canonical design-layer specification exchanged between Mission HUD, Figma, and Mission HUD Builder. Schema is the source of truth; TypeScript types + runtime validators are generated from this file. See docs/app-spec-schema.md for the human-readable design.",
+  "type": "object",
+  "version": "10.0.0",
+  "$defs": {
+    "Provenance": {
+      "type": "object",
+      "description": "Per-node lineage. Every entity that has identity carries this. createdBy/createdAt are immutable; lastEditedBy/lastEditedAt update on every edit; sourceTimeline is append-only.",
+      "properties": {
+        "createdBy": {
+          "type": "string",
+          "enum": [
+            "human-edit",
+            "figma-import",
+            "mhb-push",
+            "mockingbird-ai",
+            "preset-load",
+            "unknown"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "lastEditedBy": {
+          "type": "string",
+          "enum": [
+            "human-edit",
+            "figma-import",
+            "mhb-push",
+            "mockingbird-ai",
+            "preset-load",
+            "unknown"
+          ]
+        },
+        "lastEditedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "figmaNodeId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "figmaNodeIdHistory": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "mhbId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "mhbIdHistory": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sourceTimeline": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "source": {
+                "$ref": "#/$defs/SourceKind"
+              },
+              "at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "note": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "source",
+              "at"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "_tombstone": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/Tombstone"
+            }
+          ]
+        },
+        "slugResolution": {
+          "type": "object",
+          "description": "Trace of how a bare componentRef was qualified at the producer boundary. Recorded by the expand-slugs pass (Topic A) for auditability.",
+          "properties": {
+            "originalRef": {
+              "type": "string"
+            },
+            "resolvedRef": {
+              "type": "string"
+            },
+            "by": {
+              "type": "string",
+              "enum": [
+                "default-library",
+                "ai-mapper",
+                "human"
+              ]
+            },
+            "confidence": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          },
+          "required": [
+            "originalRef",
+            "resolvedRef",
+            "by"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "createdBy",
+        "createdAt"
+      ],
+      "additionalProperties": false
+    },
+    "SourceKind": {
+      "type": "string",
+      "enum": [
+        "human-edit",
+        "figma-import",
+        "mhb-push",
+        "mockingbird-ai",
+        "preset-load",
+        "unknown"
+      ]
+    },
+    "Tombstone": {
+      "type": "object",
+      "description": "Soft-delete marker. A re-import that no longer finds a previously-seen external ID stamps this. AI surfaces the tombstone to the user for resolution; the entity is NOT auto-deleted.",
+      "properties": {
+        "removedFrom": {
+          "type": "string",
+          "enum": [
+            "figma",
+            "mhb"
+          ]
+        },
+        "at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "lastSeenAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "humanReviewed": {
+          "type": "boolean"
+        },
+        "humanDecision": {
+          "type": "string",
+          "enum": [
+            "delete",
+            "restore",
+            "convert"
+          ]
+        },
+        "humanDecisionAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "humanDecisionNote": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "removedFrom",
+        "at"
+      ],
+      "additionalProperties": false
+    },
+    "Extensions": {
+      "type": "object",
+      "description": "Namespaced extension blocks. Reverse-DNS keys identify the owning system. Validation does NOT inspect extension content — consumers handle their own namespace and ignore others.",
+      "additionalProperties": {
+        "type": "object"
+      },
+      "propertyNames": {
+        "pattern": "^[a-z]+(\\.[a-z0-9-]+)+$"
+      }
+    },
+    "Identity": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "targetPlatforms": {
+          "type": "array",
+          "description": "Target platforms the app is intended for. MHB uses this to pick code-gen targets. If omitted, MHB infers from project context.",
+          "items": {
+            "type": "string",
+            "enum": [
+              "ios",
+              "android",
+              "web",
+              "macos",
+              "windows",
+              "linux"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "defaultLocale": {
+          "type": "string",
+          "description": "BCP 47 locale tag, e.g. 'en-US'. Default for copy in AppSpec. Multi-locale text is a future extension."
+        },
+        "_source": {
+          "type": "string"
+        },
+        "_confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "TokenRef": {
+      "type": "string",
+      "description": "DTCG-style token reference. Pattern: {namespace.path.to.token}. Resolved by consumers at render/code-gen time against the AppSpec's designTokens. Examples: {color.surface.elevated}, {dimension.spacing.md}. Where this $def is used in oneOf alongside a literal type, consumers can disambiguate: token ref ⇒ resolve; literal ⇒ use as-is.",
+      "pattern": "^\\{[a-z]+(\\.[a-z0-9_-]+)+\\}$"
+    },
+    "AssetRef": {
+      "type": "object",
+      "description": "Unified type for every kind of asset used by AppSpec — images, vectors, animations, video, font files, audio. The asset registry at AppSpec.assets keys these by id; ComponentInstance properties reference them by id via { assetId: 'asset_...' }. The contract: url MUST be fetchable (https or data: URL); arbitrary schemes are rejected.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^asset_[a-zA-Z0-9_]+$"
+        },
+        "kind": {
+          "type": "string",
+          "description": "Asset kind. 'image' = raster (PNG/JPG/WebP). 'vector' = SVG. 'lottie' = Lottie animation JSON. 'gif' = looping raster. 'video' = MP4/WebM file. 'video-embed' = streaming URL (YouTube/Vimeo). 'font' = WOFF2/TTF/OTF. 'audio' = MP3/OGG/WAV.",
+          "enum": [
+            "image",
+            "vector",
+            "lottie",
+            "gif",
+            "video",
+            "video-embed",
+            "font",
+            "audio"
+          ]
+        },
+        "url": {
+          "type": "string",
+          "description": "Absolute https URL OR data: URL. The asset MUST be fetchable by MHB without authentication beyond the project scope. figma://, file://, and other unfetchable schemes are rejected by this pattern.",
+          "pattern": "^(https?://|data:(image|video|audio|application|font)/)"
+        },
+        "mimeType": {
+          "type": "string",
+          "description": "Standard MIME type. Enables content-type validation on fetch. e.g. 'image/png', 'application/json' (Lottie), 'video/mp4', 'font/woff2'."
+        },
+        "alt": {
+          "type": "string",
+          "description": "Accessibility text. Required at the producer/consumer boundary for VISIBLE asset kinds (image, vector, lottie, gif, video, video-embed). Validators may emit a warning if missing for visible kinds — not a hard error so AI-generated assets that haven't gotten alt text yet still validate."
+        },
+        "dimensions": {
+          "type": "object",
+          "description": "Intrinsic dimensions when known. For raster: pixels. For video: pixels. For vector: viewBox. Optional.",
+          "properties": {
+            "w": {
+              "type": "number",
+              "minimum": 0
+            },
+            "h": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "w",
+            "h"
+          ],
+          "additionalProperties": false
+        },
+        "durationMs": {
+          "type": "number",
+          "description": "For time-based assets (lottie, gif, video, audio). Milliseconds.",
+          "minimum": 0
+        },
+        "sourceProvenance": {
+          "type": "object",
+          "description": "Where the asset BYTES came from (the file's lineage). Distinct from _provenance, which traces the AppSpec node lineage (who created/edited this AssetRef in the registry). Both are valid on the same asset: sourceProvenance answers 'where did the PNG come from', _provenance answers 'when was this asset entry last touched'.",
+          "properties": {
+            "source": {
+              "type": "string",
+              "enum": [
+                "gpt-image-1",
+                "flux",
+                "figma-export",
+                "user-upload",
+                "stock",
+                "url-paste",
+                "unknown"
+              ]
+            },
+            "prompt": {
+              "type": "string",
+              "description": "For AI-generated assets, the prompt used."
+            },
+            "originalUrl": {
+              "type": "string",
+              "description": "Pre-rehosting URL (if the asset was originally elsewhere and got copied to Mockingbird's CDN)."
+            },
+            "generatedAt": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "additionalProperties": false
+        },
+        "_provenance": {
+          "$ref": "#/$defs/Provenance",
+          "description": "Node-lineage envelope (createdBy/At, lastEditedBy/At, sourceTimeline, tombstone). Matches the _provenance on Screen and ComponentInstance — every AppSpec node has the same audit trail shape. Optional so producers that don't yet stamp asset provenance (e.g. Figma import's asset-extraction path) don't break the schema."
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "url",
+        "mimeType"
+      ],
+      "additionalProperties": false
+    },
+    "LibraryRefs": {
+      "type": "object",
+      "description": "Which libraries this AppSpec targets. components is the v9 Component library (mockingbird-default, ios-18, material-3, …). icons is the icon library.",
+      "properties": {
+        "components": {
+          "type": "string"
+        },
+        "icons": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "components",
+        "icons"
+      ],
+      "additionalProperties": false
+    },
+    "DesignTokens": {
+      "type": "object",
+      "description": "W3C DTCG tokens with mockingbird mode-extension. See proxy-server/lib/themes/dtcg-schema.js for REQUIRED_TOKEN_PATHS.",
+      "properties": {
+        "color": {
+          "type": "object"
+        },
+        "dimension": {
+          "type": "object"
+        },
+        "typography": {
+          "type": "object"
+        },
+        "shadow": {
+          "type": "object"
+        },
+        "$extensions": {
+          "$ref": "#/$defs/Extensions"
+        }
+      }
+    },
+    "LayoutBlock": {
+      "type": "object",
+      "description": "Figma Auto Layout block. mode: 'vertical' | 'horizontal' | 'grid' | 'absolute'. Sizing per-axis: 'fixed' | 'fill' | 'hug'. Dimension values (gap, padding) accept either a literal number (pixels) or a TokenRef (e.g., '{dimension.spacing.md}') — consumers disambiguate at render time.",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "vertical",
+            "horizontal",
+            "grid",
+            "absolute"
+          ]
+        },
+        "gap": {
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "$ref": "#/$defs/TokenRef"
+            }
+          ]
+        },
+        "padding": {
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "$ref": "#/$defs/TokenRef"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "top": {
+                  "oneOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "$ref": "#/$defs/TokenRef"
+                    }
+                  ]
+                },
+                "right": {
+                  "oneOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "$ref": "#/$defs/TokenRef"
+                    }
+                  ]
+                },
+                "bottom": {
+                  "oneOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "$ref": "#/$defs/TokenRef"
+                    }
+                  ]
+                },
+                "left": {
+                  "oneOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "$ref": "#/$defs/TokenRef"
+                    }
+                  ]
+                }
+              },
+              "additionalProperties": false
+            }
+          ]
+        },
+        "primaryAxisAlign": {
+          "type": "string",
+          "enum": [
+            "min",
+            "center",
+            "max",
+            "space_between",
+            "start",
+            "end"
+          ]
+        },
+        "counterAxisAlign": {
+          "type": "string",
+          "enum": [
+            "min",
+            "center",
+            "max",
+            "baseline",
+            "start",
+            "end"
+          ]
+        },
+        "sizing": {
+          "type": "object",
+          "properties": {
+            "w": {
+              "type": "string",
+              "enum": [
+                "fixed",
+                "fill",
+                "hug"
+              ]
+            },
+            "h": {
+              "type": "string",
+              "enum": [
+                "fixed",
+                "fill",
+                "hug"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "ComponentInstance": {
+      "type": "object",
+      "description": "A v9 Component instance. componentRef MUST be fully library-qualified (e.g., mockingbird-default/HeroCard) — schema validation rejects bare slugs. Bare slugs are accepted at the producer boundary and expanded to qualified form BEFORE schema validation (see slug-resolution pattern in design doc §A). properties carries text + boolean + instanceSwap values. variant carries variant-property selections. items + repeat support repeating sections.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^comp_[a-zA-Z0-9_]+$"
+        },
+        "componentRef": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+/[A-Za-z0-9_]+$"
+        },
+        "variant": {
+          "type": "object"
+        },
+        "properties": {
+          "type": "object"
+        },
+        "items": {
+          "type": "array"
+        },
+        "repeat": {
+          "type": "boolean"
+        },
+        "layout": {
+          "$ref": "#/$defs/LayoutBlock"
+        },
+        "styleOverrides": {
+          "type": "object"
+        },
+        "_state": {
+          "$ref": "#/$defs/EntityState"
+        },
+        "_provenance": {
+          "$ref": "#/$defs/Provenance"
+        },
+        "$extensions": {
+          "$ref": "#/$defs/Extensions"
+        }
+      },
+      "required": [
+        "id",
+        "componentRef",
+        "_provenance"
+      ],
+      "additionalProperties": false
+    },
+    "Screen": {
+      "type": "object",
+      "description": "A screen in the app. components[] is the v9 flat component list. Empty components[] is valid; use _state to signal intent (skeleton vs placeholder vs draft vs complete) — consumers (MHB, Figma export, Mockingbird UI) decide how to render each state.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^screen_[a-zA-Z0-9_]+$"
+        },
+        "name": {
+          "type": "string"
+        },
+        "purpose": {
+          "type": "string"
+        },
+        "intentRef": {
+          "type": "string"
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ComponentInstance"
+          }
+        },
+        "layout": {
+          "$ref": "#/$defs/LayoutBlock"
+        },
+        "showTabBar": {
+          "type": "boolean"
+        },
+        "navigatesTo": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "accessedFrom": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "parentScreen": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "_state": {
+          "$ref": "#/$defs/EntityState"
+        },
+        "_provenance": {
+          "$ref": "#/$defs/Provenance"
+        },
+        "$extensions": {
+          "$ref": "#/$defs/Extensions"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "components",
+        "_provenance"
+      ],
+      "additionalProperties": false
+    },
+    "FlowStep": {
+      "type": "object",
+      "description": "One step in a user flow. kind='screen' references a Screen by id. kind='action' represents an off-screen event (form submit, API call). kind='decision' is a branching point. kind='external' is something outside the app (open URL, native picker).",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^step_[a-zA-Z0-9_]+$"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "screen",
+            "action",
+            "decision",
+            "external"
+          ]
+        },
+        "screenId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "label": {
+          "type": "string"
+        },
+        "edgesTo": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "FlowStep ids this step transitions to. Linter validates these resolve to real steps."
+        },
+        "_provenance": {
+          "$ref": "#/$defs/Provenance"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "_provenance"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "screen"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "screenId"
+            ]
+          }
+        }
+      ]
+    },
+    "Flow": {
+      "type": "object",
+      "description": "A user journey through the app. start is the FlowStep id where the journey begins; steps[] is the directed graph.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^flow_[a-zA-Z0-9_]+$"
+        },
+        "name": {
+          "type": "string"
+        },
+        "purpose": {
+          "type": "string"
+        },
+        "start": {
+          "type": "string"
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FlowStep"
+          }
+        },
+        "_provenance": {
+          "$ref": "#/$defs/Provenance"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "start",
+        "steps",
+        "_provenance"
+      ],
+      "additionalProperties": false
+    },
+    "EntityState": {
+      "type": "string",
+      "description": "Lifecycle state of a Screen or ComponentInstance. Lets producers signal intent (skeleton during progressive build, draft for in-progress content, complete for signed-off, placeholder for deliberate stubs) so consumers can render or process appropriately without inferring from missing fields.",
+      "enum": [
+        "skeleton",
+        "draft",
+        "complete",
+        "placeholder"
+      ]
+    },
+    "Navigation": {
+      "type": "object",
+      "description": "App-level navigation declaration. Currently supports tab bars; future kinds (drawer, modal stack) get added here.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "tabBar",
+            "drawer",
+            "stack",
+            "none"
+          ]
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "icon": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              },
+              "screenId": {
+                "type": "string"
+              },
+              "active": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "screenId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "_provenance": {
+          "$ref": "#/$defs/Provenance"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "DesignDirection": {
+      "type": "object",
+      "properties": {
+        "style": {
+          "type": "string"
+        },
+        "mood": {
+          "type": "string"
+        },
+        "imageStyle": {
+          "type": "string"
+        },
+        "colorPalette": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "role": {
+                "type": "string"
+              },
+              "color": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "ContentGuidelines": {
+      "type": "object",
+      "properties": {
+        "tone": {
+          "type": "string"
+        },
+        "preferredTerms": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "forbiddenTerms": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "pattern": "^(missionhud/appspec|mockingbird/app-spec)/v[0-9]+\\.[0-9]+\\.[0-9]+(-[a-z0-9]+)?$",
+      "description": "Canonical schema identifier. New format: missionhud/appspec/v<semver>. Legacy mockingbird/app-spec/v<semver> is also accepted for back-compat reads during the rename transition; new writes emit the missionhud form."
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^proj_[a-zA-Z0-9_]+$"
+    },
+    "identity": {
+      "$ref": "#/$defs/Identity"
+    },
+    "vision": {
+      "type": "object"
+    },
+    "targetUsers": {
+      "type": "object"
+    },
+    "designDirection": {
+      "$ref": "#/$defs/DesignDirection"
+    },
+    "contentGuidelines": {
+      "$ref": "#/$defs/ContentGuidelines"
+    },
+    "libraryRefs": {
+      "$ref": "#/$defs/LibraryRefs"
+    },
+    "designTokens": {
+      "$ref": "#/$defs/DesignTokens"
+    },
+    "screens": {
+      "type": "object",
+      "properties": {
+        "required": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "purpose": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        },
+        "suggested": {
+          "type": "array"
+        },
+        "content": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Screen"
+          }
+        }
+      },
+      "required": [
+        "content"
+      ],
+      "additionalProperties": false
+    },
+    "userFlows": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Flow"
+      }
+    },
+    "navigation": {
+      "$ref": "#/$defs/Navigation"
+    },
+    "styleOverrides": {
+      "type": "object",
+      "description": "Flat path-keyed override map. Keys are paths like 'screen.0.section.1' per ARCHITECTURE.md §11.3."
+    },
+    "assets": {
+      "type": "object",
+      "description": "Asset registry, keyed by asset id. ComponentInstance properties reference assets by id via { assetId: 'asset_...' }. Deduplicates assets used on multiple screens; gives MHB a single fetch surface; carries per-asset provenance separate from AppSpec-node provenance.",
+      "additionalProperties": {
+        "$ref": "#/$defs/AssetRef"
+      },
+      "propertyNames": {
+        "pattern": "^asset_[a-zA-Z0-9_]+$"
+      }
+    },
+    "_provenance": {
+      "$ref": "#/$defs/Provenance"
+    },
+    "$extensions": {
+      "$ref": "#/$defs/Extensions"
+    }
+  },
+  "required": [
+    "$schema",
+    "id",
+    "identity",
+    "libraryRefs",
+    "screens",
+    "_provenance"
+  ],
+  "additionalProperties": false
+}
