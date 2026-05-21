@@ -1,0 +1,32 @@
+{
+  "name": "@missionhud/appspec-provenance",
+  "version": "10.1.0-alpha.0",
+  "description": "Mission HUD AppSpec — provenance envelope helpers. createProvenance, touchProvenance, setExternalId, markTombstone, generateId. W3C PROV-shaped audit trail across every AppSpec node.",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "README.md"
+  ],
+  "keywords": [
+    "appspec",
+    "provenance",
+    "w3c-prov",
+    "audit-trail",
+    "mission-hud"
+  ],
+  "author": "Atmospherique Pty Ltd",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/missionhud/appspec.git",
+    "directory": "packages/provenance"
+  },
+  "homepage": "https://github.com/missionhud/appspec/tree/main/packages/provenance",
+  "bugs": "https://github.com/missionhud/appspec/issues",
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

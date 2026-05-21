@@ -1,0 +1,20 @@
+{
+  "name": "appspec-monorepo",
+  "version": "10.1.0-alpha.0",
+  "description": "Mission HUD AppSpec — monorepo root. Individual packages publish under @missionhud/appspec-*.",
+  "private": true,
+  "license": "SEE LICENSE-MIT AND LICENSE-CC-BY-4.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/missionhud/appspec.git"
+  },
+  "homepage": "https://github.com/missionhud/appspec",
+  "bugs": "https://github.com/missionhud/appspec/issues",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "test": "npm test --workspaces --if-present",
+    "sync-schema": "node scripts/sync-schema.js"
+  }
+}

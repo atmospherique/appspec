@@ -1,0 +1,38 @@
+{
+  "name": "@missionhud/appspec-validate",
+  "version": "10.1.0-alpha.0",
+  "description": "Mission HUD AppSpec — Ajv-backed validator + slug expansion. Compiles the canonical v10 JSON Schema once and exposes validate() / validateAndExpand().",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "expand-slugs.js",
+    "README.md"
+  ],
+  "keywords": [
+    "appspec",
+    "json-schema",
+    "ajv",
+    "validation",
+    "mission-hud"
+  ],
+  "author": "Atmospherique Pty Ltd",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/missionhud/appspec.git",
+    "directory": "packages/validate"
+  },
+  "homepage": "https://github.com/missionhud/appspec/tree/main/packages/validate",
+  "bugs": "https://github.com/missionhud/appspec/issues",
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@missionhud/appspec-core": "^10.1.0-alpha.0",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "name": "@missionhud/appspec-core",
+  "version": "10.1.0-alpha.0",
+  "description": "Mission HUD AppSpec — canonical JSON Schema + identifier helpers. The foundation package every other @missionhud/appspec-* package depends on.",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "schema.json",
+    "README.md"
+  ],
+  "keywords": [
+    "appspec",
+    "json-schema",
+    "design-tokens",
+    "dtcg",
+    "mission-hud",
+    "ai-design"
+  ],
+  "author": "Atmospherique Pty Ltd",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/missionhud/appspec.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/missionhud/appspec/tree/main/packages/core",
+  "bugs": "https://github.com/missionhud/appspec/issues",
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
