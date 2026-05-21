@@ -15,10 +15,42 @@ Schema versions are tracked separately from release versions: a v10.x release ma
 - `originMissionId` field on root for Mission HUD family integration
 - `relevantMissions[]` association list for many-to-many mission reuse
 - `sourceTimeline` alignment with W3C PROV shape (interop with Discovery + Builder audit chains)
+- `@missionhud/appspec-cli` — terminal interface
 - Reference adapter for Figma round-trip
 - Reference adapter for React + DTCG → Tailwind theme generation
 - Conformance test suite (Core tier first; Standard + Extended in v10.2)
-- npm packages: `@missionhud/appspec-{core,validate,lint,patch,migrate,provenance,cli}`
+- npm publish (the package code exists; not yet `npm publish`ed)
+
+---
+
+## [10.1.0-alpha.1] — 2026-05-21 (npm packages — 6 of 7)
+
+Monorepo scaffolded; six packages extracted from the Mission HUD Designer reference implementation. Pure functions only — no database / Postgres / Supabase coupling in any package. Each is independently consumable.
+
+### Packages added
+
+| Package | Description | Runtime deps |
+|---|---|---|
+| `@missionhud/appspec-core` | Canonical schema + identifier helpers (`SCHEMA_ID`, `LEGACY_SCHEMA_ID`, `isV10SchemaId`) | none |
+| `@missionhud/appspec-provenance` | W3C PROV-shaped envelope helpers (`createProvenance`, `touchProvenance`, `generateId`, `markTombstone`, etc.) | none (uses `node:crypto`) |
+| `@missionhud/appspec-validate` | Ajv-backed validator + slug expansion | core, ajv, ajv-formats |
+| `@missionhud/appspec-lint` | Cross-reference integrity (flow→screen, asset, token, orphans, a11y) | none |
+| `@missionhud/appspec-migrate` | v9 → v10 migration helper | core, provenance, validate |
+| `@missionhud/appspec-patch` | RFC 6902 helpers + auto-apply heuristic + per-node provenance touch | provenance, fast-json-patch |
+
+### Tooling
+
+- npm workspaces at the repo root
+- `scripts/sync-schema.js` keeps `packages/{core,validate}/schema.json` in sync with the canonical `spec/v10/schema.json` (run with `--check` in CI for drift detection)
+
+### Smoke-tested
+
+All 6 packages compose: validate clean, lint clean, patch applies + bumps per-node provenance correctly (touchedNodes returned), migrate v9→v10 with `_meta.anchors` moved into `$extensions['com.mockingbird']`, legacy `mockingbird/app-spec/v10.x` schema id still validates (Forever Backwards Read commitment in action).
+
+### Notes
+
+- These packages aren't published to npm yet (`npm publish` not run). Consumers should depend via `file:` or `link:` for now; the public `npm install @missionhud/appspec-core` lands with v10.1.0 stable.
+- The patch package deliberately excludes the productized store-coupled lifecycle (Postgres-backed `proposePatch`/`applyPatch` with version concurrency). Those stay in the Mission HUD Designer codebase as the reference pattern. Open-source consumers build their own lifecycle on top of these pure helpers.
 
 ---
 

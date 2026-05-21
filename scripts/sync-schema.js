@@ -21,12 +21,12 @@ const path = require('path');
 const ROOT = path.resolve(__dirname, '..');
 const CANONICAL = path.join(ROOT, 'spec', 'v10', 'schema.json');
 
-// Packages that bundle the schema (relative to packages/<name>/schema.json).
+// Packages that bundle the schema directly. Other packages (lint,
+// migrate, patch) consume the schema transitively through
+// @missionhud/appspec-core and don't need their own copy.
 const TARGETS = [
   'core',
   'validate',
-  'migrate',
-  'lint',
 ];
 
 const CHECK = process.argv.includes('--check');

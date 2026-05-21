@@ -1,0 +1,36 @@
+{
+  "name": "@missionhud/appspec-patch",
+  "version": "10.1.0-alpha.0",
+  "description": "Mission HUD AppSpec — RFC 6902 JSON Patch helpers. Apply patches to an AppSpec, touch affected nodes' provenance, evaluate auto-apply heuristic. Pure functions; no database coupling.",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "README.md"
+  ],
+  "keywords": [
+    "appspec",
+    "json-patch",
+    "rfc-6902",
+    "provenance",
+    "mission-hud"
+  ],
+  "author": "Atmospherique Pty Ltd",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/missionhud/appspec.git",
+    "directory": "packages/patch"
+  },
+  "homepage": "https://github.com/missionhud/appspec/tree/main/packages/patch",
+  "bugs": "https://github.com/missionhud/appspec/issues",
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@missionhud/appspec-provenance": "^10.1.0-alpha.0",
+    "fast-json-patch": "^3.1.1"
+  }
+}

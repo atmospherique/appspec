@@ -1,0 +1,32 @@
+{
+  "name": "@missionhud/appspec-lint",
+  "version": "10.1.0-alpha.0",
+  "description": "Mission HUD AppSpec — cross-reference integrity linter. Catches dangling references (flow→screen, asset, token) that schema validation alone misses.",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "README.md"
+  ],
+  "keywords": [
+    "appspec",
+    "lint",
+    "cross-reference",
+    "integrity",
+    "mission-hud"
+  ],
+  "author": "Atmospherique Pty Ltd",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/missionhud/appspec.git",
+    "directory": "packages/lint"
+  },
+  "homepage": "https://github.com/missionhud/appspec/tree/main/packages/lint",
+  "bugs": "https://github.com/missionhud/appspec/issues",
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
