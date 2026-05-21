@@ -50,4 +50,4 @@ https://creativecommons.org/licenses/by/4.0/
 
 CODE LICENSE — The reference implementation (anything inside
 `packages/` and `adapters/`) is licensed separately under MIT. See
-LICENSE-CODE for the code license terms.
+LICENSE-MIT for the code license terms.

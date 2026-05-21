@@ -31,8 +31,8 @@ Initial pre-release. Repository created at `github.com/missionhud/appspec`. Sche
 - `spec/v10/schema.json` — canonical JSON Schema (Draft 2020-12), schema version `10.0.0`
 - `spec/v10/spec.md` — human-readable specification (initial draft; expanding through alpha)
 - `README.md` — project orientation
-- `LICENSE-SPEC` (CC-BY 4.0) — specification document license
-- `LICENSE-CODE` (MIT) — reference implementation code license
+- `LICENSE-CC-BY-4.0` (CC-BY 4.0) — specification document license
+- `LICENSE-MIT` (MIT) — reference implementation code license
 - `GOVERNANCE.md` — RFC process, maintainership, migration path
 - `CONTRIBUTING.md` — issue + PR contribution workflow
 

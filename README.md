@@ -35,7 +35,7 @@ The shape is deliberately **AI-friendly and tool-agnostic**: any AI agent can re
 
 AppSpec exists because the AI design / code tooling ecosystem is converging on the same primitives — design tokens (DTCG), structured component definitions, semantic intent, audit trails — but every tool ships its own proprietary shape. A vendor-neutral interchange format lets agents and tools compose without lock-in.
 
-The spec is open under **CC-BY 4.0**; the reference implementation is open under **MIT**. See `LICENSE-SPEC` and `LICENSE-CODE`.
+The spec is open under **CC-BY 4.0**; the reference implementation is open under **MIT**. See `LICENSE-CC-BY-4.0` and `LICENSE-MIT`.
 
 ## Status — what's here, what's coming
 
@@ -43,7 +43,7 @@ The spec is open under **CC-BY 4.0**; the reference implementation is open under
 
 - `spec/v10/schema.json` — the canonical JSON Schema
 - `spec/v10/spec.md` — human-readable specification with rationale
-- `LICENSE-SPEC` + `LICENSE-CODE` — dual licensing
+- `LICENSE-CC-BY-4.0` + `LICENSE-MIT` — dual licensing
 - `GOVERNANCE.md` — RFC process, maintainership, migration path
 - `CHANGELOG.md` — versioned history
 
@@ -171,8 +171,8 @@ Until v10.1.0 ships, expect rapid iteration. Pre-release semantics: anything in 
 
 | | License |
 |---|---|
-| **Specification documents** (`spec/`, `*.md` outside `packages/`) | [CC-BY 4.0](LICENSE-SPEC) — share and adapt with attribution |
-| **Reference implementation code** (`packages/`, `adapters/`) | [MIT](LICENSE-CODE) — do whatever you want |
+| **Specification documents** (`spec/`, `*.md` outside `packages/`) | [CC-BY 4.0](LICENSE-CC-BY-4.0) — share and adapt with attribution |
+| **Reference implementation code** (`packages/`, `adapters/`) | [MIT](LICENSE-MIT) — do whatever you want |
 
 This follows the W3C / OpenAPI / JSON Schema pattern: specs are content (CC-BY); code is code (MIT).
 
