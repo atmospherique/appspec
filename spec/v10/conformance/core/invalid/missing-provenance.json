@@ -1,0 +1,7 @@
+{
+  "$schema": "missionhud/appspec/v10.0.0",
+  "id": "proj_no_prov",
+  "identity": { "name": "No Provenance" },
+  "libraryRefs": { "components": "missionhud-default", "icons": "material-symbols" },
+  "screens": { "content": [] }
+}

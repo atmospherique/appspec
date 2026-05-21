@@ -1,0 +1,19 @@
+{
+  "$schema": "missionhud/appspec/v10.0.0",
+  "id": "proj_minimal",
+  "identity": { "name": "Minimal" },
+  "libraryRefs": { "components": "missionhud-default", "icons": "material-symbols" },
+  "screens": { "content": [] },
+  "_provenance": {
+    "createdBy": "human-edit",
+    "createdAt": "2026-05-21T00:00:00.000Z",
+    "lastEditedBy": "human-edit",
+    "lastEditedAt": "2026-05-21T00:00:00.000Z",
+    "figmaNodeId": null,
+    "figmaNodeIdHistory": [],
+    "mhbId": null,
+    "mhbIdHistory": [],
+    "sourceTimeline": [{ "source": "human-edit", "at": "2026-05-21T00:00:00.000Z" }],
+    "_tombstone": null
+  }
+}

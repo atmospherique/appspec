@@ -1,6 +1,6 @@
 {
   "name": "appspec-monorepo",
-  "version": "10.1.0-alpha.0",
+  "version": "10.1.0-alpha.4",
   "description": "Mission HUD AppSpec — monorepo root. Individual packages publish under @missionhud/appspec-*.",
   "private": true,
   "license": "SEE LICENSE-MIT AND LICENSE-CC-BY-4.0",
@@ -16,7 +16,10 @@
   ],
   "scripts": {
     "test": "npm test --workspaces --if-present",
-    "sync-schema": "node scripts/sync-schema.js"
+    "sync-schema": "node scripts/sync-schema.js",
+    "validate-libraries": "node scripts/validate-library-descriptors.js",
+    "conformance": "node spec/v10/conformance/run.js",
+    "ci": "npm run validate-libraries && npm run conformance && npm test"
   },
   "devDependencies": {
     "react": "^19.2.6",

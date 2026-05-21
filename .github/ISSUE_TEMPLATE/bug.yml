@@ -1,0 +1,56 @@
+name: Bug report
+description: A specific issue in the spec, schema, reference packages, or library descriptors.
+title: "[Bug] "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing a bug. AppSpec is an interchange spec — bugs in
+        the schema, packages, library descriptors, or conformance suite
+        affect every consumer, so we triage them quickly.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which area?
+      options:
+        - Schema (app-spec.schema.json)
+        - Library descriptor schema
+        - Native library descriptor (shadcn-ui / ios-18 / material-3)
+        - Reference package (validate / lint / patch / migrate / runtime-react / cli)
+        - Conformance suite
+        - Documentation
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: AppSpec version
+      description: 'e.g. v10.0.0 / v10.1.0-alpha.3'
+      placeholder: 'v10.1.0-alpha.3'
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: The minimum reproducible example, plus what you observed.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+
+  - type: textarea
+    id: spec-fragment
+    attributes:
+      label: AppSpec fragment (if applicable)
+      description: 'Paste the minimum JSON fragment that reproduces the issue. Strip anything sensitive.'
+      render: json

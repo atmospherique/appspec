@@ -1,0 +1,7 @@
+{
+  "expectedValid": false,
+  "expectedErrors": [
+    { "path": "/id", "kind": "pattern-mismatch" }
+  ],
+  "description": "Root `id` doesn't match required pattern `^proj_[a-zA-Z0-9_]+$` — conformant validator must reject."
+}

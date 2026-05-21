@@ -1,0 +1,61 @@
+{
+  "$schema": "missionhud/appspec/v10.0.0",
+  "id": "proj_multi",
+  "identity": { "name": "Multi-Screen App", "description": "Demonstrates multiple screens", "category": "utility" },
+  "libraryRefs": { "components": "missionhud-default", "icons": "material-symbols" },
+  "screens": {
+    "content": [
+      {
+        "id": "screen_home",
+        "name": "Home",
+        "purpose": "landing",
+        "components": [],
+        "_provenance": {
+          "createdBy": "human-edit",
+          "createdAt": "2026-05-21T00:00:00.000Z",
+          "lastEditedBy": "human-edit",
+          "lastEditedAt": "2026-05-21T00:00:00.000Z",
+          "figmaNodeId": null,
+          "figmaNodeIdHistory": [],
+          "mhbId": null,
+          "mhbIdHistory": [],
+          "sourceTimeline": [{ "source": "human-edit", "at": "2026-05-21T00:00:00.000Z" }],
+          "_tombstone": null
+        }
+      },
+      {
+        "id": "screen_settings",
+        "name": "Settings",
+        "purpose": "configuration",
+        "components": [],
+        "_provenance": {
+          "createdBy": "human-edit",
+          "createdAt": "2026-05-21T00:01:00.000Z",
+          "lastEditedBy": "human-edit",
+          "lastEditedAt": "2026-05-21T00:01:00.000Z",
+          "figmaNodeId": null,
+          "figmaNodeIdHistory": [],
+          "mhbId": null,
+          "mhbIdHistory": [],
+          "sourceTimeline": [{ "source": "human-edit", "at": "2026-05-21T00:01:00.000Z" }],
+          "_tombstone": null
+        }
+      }
+    ]
+  },
+  "_provenance": {
+    "createdBy": "human-edit",
+    "createdAt": "2026-05-21T00:00:00.000Z",
+    "lastEditedBy": "human-edit",
+    "lastEditedAt": "2026-05-21T00:01:00.000Z",
+    "figmaNodeId": null,
+    "figmaNodeIdHistory": [],
+    "mhbId": null,
+    "mhbIdHistory": [],
+    "sourceTimeline": [
+      { "source": "human-edit", "at": "2026-05-21T00:00:00.000Z" },
+      { "source": "human-edit", "at": "2026-05-21T00:01:00.000Z" }
+    ],
+    "_tombstone": null
+  }
+}

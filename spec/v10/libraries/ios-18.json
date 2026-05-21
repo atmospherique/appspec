@@ -1,0 +1,300 @@
+{
+  "$id": "ios-18",
+  "$version": "1.0.0",
+  "$description": "Apple iOS 18 — native SwiftUI components. The componentRef vocabulary matches Apple's SwiftUI types directly, so codegen is 1:1 (NavigationStack in AppSpec → NavigationStack in Swift source). This is the canonical 'native library' pattern: zero translation loss between design intent and shipped code. Mirrors the iOS 18 Figma UI Kit; designers using that kit in Figma produce AppSpecs that reference these components.",
+  "$kind": "native",
+  "components": {
+    "NavigationStack": {
+      "name": "NavigationStack",
+      "description": "Root navigation container. SwiftUI's standard navigation primitive (replaced NavigationView in iOS 16+).",
+      "category": "navigation",
+      "properties": {
+        "title": { "type": "text", "description": "Title shown in the navigation bar" },
+        "children": { "type": "instanceSwap", "description": "The screen's content" }
+      },
+      "nativeMapping": {
+        "swiftui": {
+          "kind": "codegen",
+          "import": "import SwiftUI",
+          "instantiation": "NavigationStack {\n  $children\n}\n.navigationTitle(\"$title\")",
+          "propertyMap": { "title": "title", "children": "children" }
+        },
+        "runtime-react": {
+          "kind": "runtime",
+          "registry": "@missionhud/runtime-ios-preview-kit",
+          "componentName": "NavigationStack",
+          "propertyMap": { "title": "title", "children": "children" }
+        }
+      }
+    },
+    "List": {
+      "name": "List",
+      "description": "Vertical list with platform-standard row styling. Maps to SwiftUI's List view.",
+      "category": "layout",
+      "properties": {
+        "children": { "type": "instanceSwap" }
+      },
+      "variants": {
+        "style": {
+          "type": "enum",
+          "values": ["automatic", "plain", "grouped", "insetGrouped", "sidebar"],
+          "default": "automatic",
+          "description": "Maps to .listStyle() modifier"
+        }
+      },
+      "supportsItems": true,
+      "nativeMapping": {
+        "swiftui": {
+          "kind": "codegen",
+          "import": "import SwiftUI",
+          "instantiation": "List {\n  $children\n}\n.listStyle(.$style)",
+          "propertyMap": { "children": "children" }
+        },
+        "runtime-react": {
+          "kind": "runtime",
+          "registry": "@missionhud/runtime-ios-preview-kit",
+          "componentName": "List"
+        }
+      }
+    },
+    "Section": {
+      "name": "Section",
+      "description": "Grouping inside a List or Form. Maps to SwiftUI's Section view.",
+      "category": "layout",
+      "properties": {
+        "header": { "type": "text" },
+        "footer": { "type": "text" },
+        "children": { "type": "instanceSwap" }
+      },
+      "supportsItems": true,
+      "nativeMapping": {
+        "swiftui": {
+          "kind": "codegen",
+          "import": "import SwiftUI",
+          "instantiation": "Section {\n  $children\n} header: {\n  Text(\"$header\")\n} footer: {\n  Text(\"$footer\")\n}"
+        },
+        "runtime-react": {
+          "kind": "runtime",
+          "registry": "@missionhud/runtime-ios-preview-kit",
+          "componentName": "Section"
+        }
+      }
+    },
+    "Text": {
+      "name": "Text",
+      "description": "SwiftUI Text view. Maps to native text rendering with Dynamic Type support.",
+      "category": "typography",
+      "properties": {
+        "content": { "type": "text", "required": true }
+      },
+      "variants": {
+        "font": {
+          "type": "enum",
+          "values": ["largeTitle", "title", "title2", "title3", "headline", "subheadline", "body", "callout", "caption", "caption2", "footnote"],
+          "default": "body",
+          "description": "Maps to .font(.<value>) modifier. Uses Apple's Dynamic Type semantic sizes."
+        }
+      },
+      "nativeMapping": {
+        "swiftui": {
+          "kind": "codegen",
+          "import": "import SwiftUI",
+          "instantiation": "Text(\"$content\")\n  .font(.$font)",
+          "propertyMap": { "content": "content" }
+        },
+        "runtime-react": {
+          "kind": "runtime",
+          "registry": "@missionhud/runtime-ios-preview-kit",
+          "componentName": "Text"
+        }
+      }
+    },
+    "Button": {
+      "name": "Button",
+      "description": "Standard action button. Maps to SwiftUI Button.",
+      "category": "input",
+      "properties": {
+        "label": { "type": "text", "required": true, "description": "Button label text" },
+        "action": { "type": "text", "description": "Action handler name (codegen wires to a parent ViewModel method)" }
+      },
+      "variants": {
+        "role": {
+          "type": "enum",
+          "values": ["default", "cancel", "destructive"],
+          "default": "default",
+          "description": "Maps to ButtonRole; .destructive adds red styling automatically"
+        },
+        "style": {
+          "type": "enum",
+          "values": ["automatic", "bordered", "borderedProminent", "borderless", "plain"],
+          "default": "automatic"
+        }
+      },
+      "nativeMapping": {
+        "swiftui": {
+          "kind": "codegen",
+          "import": "import SwiftUI",
+          "instantiation": "Button(\"$label\", role: .$role) {\n  $action()\n}\n.buttonStyle(.$style)",
+          "propertyMap": { "label": "label" }
+        },
+        "runtime-react": {
+          "kind": "runtime",
+          "registry": "@missionhud/runtime-ios-preview-kit",
+          "componentName": "Button"
+        }
+      }
+    },
+    "TextField": {
+      "name": "TextField",
+      "description": "Single-line text input. Maps to SwiftUI TextField.",
+      "category": "input",
+      "properties": {
+        "title": { "type": "text", "description": "Placeholder text shown when empty" },
+        "text": { "type": "text", "description": "Bound text value (codegen wires to @State / @Binding)" }
+      },
+      "variants": {
+        "axis": {
+          "type": "enum",
+          "values": ["horizontal", "vertical"],
+          "default": "horizontal",
+          "description": "Vertical axis allows multi-line entry"
+        },
+        "style": {
+          "type": "enum",
+          "values": ["automatic", "plain", "roundedBorder"],
+          "default": "automatic"
+        }
+      },
+      "nativeMapping": {
+        "swiftui": {
+          "kind": "codegen",
+          "import": "import SwiftUI",
+          "instantiation": "TextField(\"$title\", text: $$text, axis: .$axis)\n  .textFieldStyle(.$style)"
+        },
+        "runtime-react": {
+          "kind": "runtime",
+          "registry": "@missionhud/runtime-ios-preview-kit",
+          "componentName": "TextField"
+        }
+      }
+    },
+    "Toggle": {
+      "name": "Toggle",
+      "description": "On/off switch. Maps to SwiftUI Toggle.",
+      "category": "input",
+      "properties": {
+        "label": { "type": "text", "required": true },
+        "isOn": { "type": "boolean", "default": false }
+      },
+      "nativeMapping": {
+        "swiftui": {
+          "kind": "codegen",
+          "import": "import SwiftUI",
+          "instantiation": "Toggle(\"$label\", isOn: $$isOn)"
+        },
+        "runtime-react": {
+          "kind": "runtime",
+          "registry": "@missionhud/runtime-ios-preview-kit",
+          "componentName": "Toggle"
+        }
+      }
+    },
+    "VStack": {
+      "name": "VStack",
+      "description": "Vertical stack layout. Maps to SwiftUI VStack.",
+      "category": "layout",
+      "properties": {
+        "spacing": { "type": "tokenRef", "description": "DTCG dimension token, e.g. '{dimension.spacing.md}'" },
+        "children": { "type": "instanceSwap" }
+      },
+      "variants": {
+        "alignment": {
+          "type": "enum",
+          "values": ["leading", "center", "trailing"],
+          "default": "center"
+        }
+      },
+      "nativeMapping": {
+        "swiftui": {
+          "kind": "codegen",
+          "import": "import SwiftUI",
+          "instantiation": "VStack(alignment: .$alignment, spacing: $spacing) {\n  $children\n}"
+        },
+        "runtime-react": {
+          "kind": "runtime",
+          "registry": "@missionhud/runtime-ios-preview-kit",
+          "componentName": "VStack"
+        }
+      }
+    },
+    "HStack": {
+      "name": "HStack",
+      "description": "Horizontal stack layout. Maps to SwiftUI HStack.",
+      "category": "layout",
+      "properties": {
+        "spacing": { "type": "tokenRef" },
+        "children": { "type": "instanceSwap" }
+      },
+      "variants": {
+        "alignment": {
+          "type": "enum",
+          "values": ["top", "center", "bottom", "firstTextBaseline", "lastTextBaseline"],
+          "default": "center"
+        }
+      },
+      "nativeMapping": {
+        "swiftui": {
+          "kind": "codegen",
+          "import": "import SwiftUI",
+          "instantiation": "HStack(alignment: .$alignment, spacing: $spacing) {\n  $children\n}"
+        },
+        "runtime-react": {
+          "kind": "runtime",
+          "registry": "@missionhud/runtime-ios-preview-kit",
+          "componentName": "HStack"
+        }
+      }
+    },
+    "Image": {
+      "name": "Image",
+      "description": "Image view. Maps to SwiftUI Image, supporting both system (SF Symbols) and asset references.",
+      "category": "display",
+      "properties": {
+        "systemName": { "type": "text", "description": "SF Symbol name (e.g. 'star.fill'). Mutually exclusive with assetId." },
+        "assetId": { "type": "assetRef", "description": "Reference to an AssetRef in the AppSpec's assets registry. Mutually exclusive with systemName." }
+      },
+      "variants": {
+        "renderingMode": {
+          "type": "enum",
+          "values": ["original", "template"],
+          "default": "original",
+          "description": "Maps to .renderingMode() modifier"
+        }
+      },
+      "nativeMapping": {
+        "swiftui": {
+          "kind": "codegen",
+          "import": "import SwiftUI",
+          "instantiation": "Image(systemName: \"$systemName\")\n  .renderingMode(.$renderingMode)",
+          "$extensions": {
+            "com.missionhud": {
+              "notes": "When assetId is set instead of systemName, generator should emit Image(\"<asset-name>\") with the asset name resolved from the AppSpec assets registry; consumer-side codegen wires this."
+            }
+          }
+        },
+        "runtime-react": {
+          "kind": "runtime",
+          "registry": "@missionhud/runtime-ios-preview-kit",
+          "componentName": "Image"
+        }
+      }
+    }
+  },
+  "$extensions": {
+    "com.missionhud": {
+      "platformTarget": "iOS 18+",
+      "swiftVersion": "5.10+",
+      "notes": "Native library — componentRef strings map 1:1 to SwiftUI types. Designers using the iOS 18 Figma UI Kit produce AppSpecs that reference these components; Builder generates Swift source with zero translation loss. The runtime-react mappings point at a future @missionhud/runtime-ios-preview-kit registry that approximates iOS visuals in a web preview (useful for Designer's preview canvas)."
+    }
+  }
+}

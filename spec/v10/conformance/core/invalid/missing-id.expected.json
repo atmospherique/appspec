@@ -1,0 +1,7 @@
+{
+  "expectedValid": false,
+  "expectedErrors": [
+    { "path": "(root)", "kind": "missing-required-property", "property": "id" }
+  ],
+  "description": "Root spec missing required `id` field — conformant validator must reject."
+}

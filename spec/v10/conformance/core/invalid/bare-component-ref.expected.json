@@ -1,0 +1,7 @@
+{
+  "expectedValid": false,
+  "expectedErrors": [
+    { "path": "/screens/content/0/components/0/componentRef", "kind": "pattern-mismatch" }
+  ],
+  "description": "ComponentInstance has a bare componentRef ('HeroCard') without library qualification. A conformant validator MUST reject this — producers are required to expand bare slugs at the producer boundary (via validateAndExpand or equivalent). The bare-slug form is accepted at the producer boundary; validation always sees qualified refs."
+}

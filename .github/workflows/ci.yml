@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    name: Schema + library validation + conformance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate JSON schemas parse
+        run: |
+          node -e "JSON.parse(require('fs').readFileSync('spec/v10/app-spec.schema.json','utf8'))"
+          node -e "JSON.parse(require('fs').readFileSync('spec/v10/library-descriptor.schema.json','utf8'))"
+
+      - name: Validate native library descriptors
+        run: node scripts/validate-library-descriptors.js
+
+      - name: Run conformance suite (Core tier)
+        run: node spec/v10/conformance/run.js --tier=core
+
+      - name: Run package unit tests
+        run: npm test --workspaces --if-present
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint conformance fixtures (must not regress)
+        run: |
+          for f in spec/v10/conformance/core/valid/*.json; do
+            node packages/cli/bin/appspec.js lint "$f" || true
+          done

@@ -1,0 +1,289 @@
+{
+  "$id": "material-3",
+  "$version": "1.0.0",
+  "$description": "Google Material Design 3 — native Jetpack Compose components. componentRef vocabulary matches Compose's standard composables directly (Scaffold, TopAppBar, Card, FilledButton, etc.), so codegen is 1:1: Material3 Card in AppSpec → androidx.compose.material3.Card in Kotlin source. Mirrors the Material 3 Figma UI Kit.",
+  "$kind": "native",
+  "components": {
+    "Scaffold": {
+      "name": "Scaffold",
+      "description": "Screen container providing slots for topBar, bottomBar, FAB, snackbar host, and content. Maps to androidx.compose.material3.Scaffold.",
+      "category": "layout",
+      "properties": {
+        "topBar": { "type": "instanceSwap", "description": "Typically a TopAppBar" },
+        "bottomBar": { "type": "instanceSwap", "description": "Typically a NavigationBar" },
+        "floatingActionButton": { "type": "instanceSwap" },
+        "content": { "type": "instanceSwap" }
+      },
+      "nativeMapping": {
+        "compose": {
+          "kind": "codegen",
+          "import": "import androidx.compose.material3.Scaffold",
+          "instantiation": "Scaffold(\n  topBar = { $topBar },\n  bottomBar = { $bottomBar },\n  floatingActionButton = { $floatingActionButton }\n) { padding ->\n  $content\n}"
+        },
+        "runtime-react": {
+          "kind": "runtime",
+          "registry": "@missionhud/runtime-material-preview-kit",
+          "componentName": "Scaffold"
+        }
+      }
+    },
+    "TopAppBar": {
+      "name": "TopAppBar",
+      "description": "Material 3 top app bar with title, navigation icon, and action slots.",
+      "category": "navigation",
+      "properties": {
+        "title": { "type": "text", "required": true },
+        "navigationIcon": { "type": "instanceSwap" },
+        "actions": { "type": "instanceSwap" }
+      },
+      "variants": {
+        "style": {
+          "type": "enum",
+          "values": ["small", "centerAligned", "medium", "large"],
+          "default": "small",
+          "description": "Maps to TopAppBar / CenterAlignedTopAppBar / MediumTopAppBar / LargeTopAppBar composables"
+        }
+      },
+      "nativeMapping": {
+        "compose": {
+          "kind": "codegen",
+          "import": "import androidx.compose.material3.TopAppBar\nimport androidx.compose.material3.CenterAlignedTopAppBar\nimport androidx.compose.material3.MediumTopAppBar\nimport androidx.compose.material3.LargeTopAppBar\nimport androidx.compose.material3.Text",
+          "instantiation": "TopAppBar(\n  title = { Text(\"$title\") },\n  navigationIcon = { $navigationIcon },\n  actions = { $actions }\n)",
+          "$extensions": {
+            "com.missionhud": {
+              "notes": "Codegen should pick the right TopAppBar variant based on style: small → TopAppBar, centerAligned → CenterAlignedTopAppBar, medium → MediumTopAppBar, large → LargeTopAppBar"
+            }
+          }
+        },
+        "runtime-react": {
+          "kind": "runtime",
+          "registry": "@missionhud/runtime-material-preview-kit",
+          "componentName": "TopAppBar"
+        }
+      }
+    },
+    "Card": {
+      "name": "Card",
+      "description": "Material 3 card container.",
+      "category": "layout",
+      "properties": {
+        "content": { "type": "instanceSwap" }
+      },
+      "variants": {
+        "style": {
+          "type": "enum",
+          "values": ["filled", "elevated", "outlined"],
+          "default": "filled",
+          "description": "Maps to Card / ElevatedCard / OutlinedCard composables"
+        }
+      },
+      "nativeMapping": {
+        "compose": {
+          "kind": "codegen",
+          "import": "import androidx.compose.material3.Card\nimport androidx.compose.material3.ElevatedCard\nimport androidx.compose.material3.OutlinedCard",
+          "instantiation": "Card {\n  $content\n}"
+        },
+        "runtime-react": {
+          "kind": "runtime",
+          "registry": "@missionhud/runtime-material-preview-kit",
+          "componentName": "Card"
+        }
+      }
+    },
+    "Text": {
+      "name": "Text",
+      "description": "Material 3 text. Type-scale variants map to Material's typography tokens.",
+      "category": "typography",
+      "properties": {
+        "text": { "type": "text", "required": true }
+      },
+      "variants": {
+        "style": {
+          "type": "enum",
+          "values": ["displayLarge", "displayMedium", "displaySmall", "headlineLarge", "headlineMedium", "headlineSmall", "titleLarge", "titleMedium", "titleSmall", "bodyLarge", "bodyMedium", "bodySmall", "labelLarge", "labelMedium", "labelSmall"],
+          "default": "bodyMedium",
+          "description": "Maps to MaterialTheme.typography.<style>"
+        }
+      },
+      "nativeMapping": {
+        "compose": {
+          "kind": "codegen",
+          "import": "import androidx.compose.material3.Text\nimport androidx.compose.material3.MaterialTheme",
+          "instantiation": "Text(text = \"$text\", style = MaterialTheme.typography.$style)"
+        },
+        "runtime-react": {
+          "kind": "runtime",
+          "registry": "@missionhud/runtime-material-preview-kit",
+          "componentName": "Text"
+        }
+      }
+    },
+    "FilledButton": {
+      "name": "FilledButton",
+      "description": "Filled (primary) action button. Maps to Material 3 Button composable.",
+      "category": "input",
+      "properties": {
+        "label": { "type": "text", "required": true },
+        "enabled": { "type": "boolean", "default": true },
+        "onClick": { "type": "text", "description": "Click handler name; codegen wires to a ViewModel function" }
+      },
+      "nativeMapping": {
+        "compose": {
+          "kind": "codegen",
+          "import": "import androidx.compose.material3.Button\nimport androidx.compose.material3.Text",
+          "instantiation": "Button(onClick = { $onClick() }, enabled = $enabled) {\n  Text(\"$label\")\n}"
+        },
+        "runtime-react": {
+          "kind": "runtime",
+          "registry": "@missionhud/runtime-material-preview-kit",
+          "componentName": "FilledButton"
+        }
+      }
+    },
+    "OutlinedButton": {
+      "name": "OutlinedButton",
+      "description": "Outlined (secondary) action button. Maps to Material 3 OutlinedButton composable.",
+      "category": "input",
+      "properties": {
+        "label": { "type": "text", "required": true },
+        "enabled": { "type": "boolean", "default": true },
+        "onClick": { "type": "text" }
+      },
+      "nativeMapping": {
+        "compose": {
+          "kind": "codegen",
+          "import": "import androidx.compose.material3.OutlinedButton\nimport androidx.compose.material3.Text",
+          "instantiation": "OutlinedButton(onClick = { $onClick() }, enabled = $enabled) {\n  Text(\"$label\")\n}"
+        },
+        "runtime-react": {
+          "kind": "runtime",
+          "registry": "@missionhud/runtime-material-preview-kit",
+          "componentName": "OutlinedButton"
+        }
+      }
+    },
+    "TextField": {
+      "name": "TextField",
+      "description": "Material 3 text field (filled style by default; outlined variant via style variant).",
+      "category": "input",
+      "properties": {
+        "value": { "type": "text" },
+        "label": { "type": "text" },
+        "placeholder": { "type": "text" },
+        "onValueChange": { "type": "text", "description": "Change handler name; codegen wires to a state update lambda" }
+      },
+      "variants": {
+        "style": {
+          "type": "enum",
+          "values": ["filled", "outlined"],
+          "default": "filled",
+          "description": "Maps to TextField / OutlinedTextField"
+        }
+      },
+      "nativeMapping": {
+        "compose": {
+          "kind": "codegen",
+          "import": "import androidx.compose.material3.TextField\nimport androidx.compose.material3.OutlinedTextField\nimport androidx.compose.material3.Text",
+          "instantiation": "TextField(\n  value = \"$value\",\n  onValueChange = { newValue -> $onValueChange(newValue) },\n  label = { Text(\"$label\") },\n  placeholder = { Text(\"$placeholder\") }\n)"
+        },
+        "runtime-react": {
+          "kind": "runtime",
+          "registry": "@missionhud/runtime-material-preview-kit",
+          "componentName": "TextField"
+        }
+      }
+    },
+    "Switch": {
+      "name": "Switch",
+      "description": "Material 3 switch (on/off toggle). Maps to androidx.compose.material3.Switch.",
+      "category": "input",
+      "properties": {
+        "checked": { "type": "boolean", "default": false },
+        "onCheckedChange": { "type": "text" }
+      },
+      "nativeMapping": {
+        "compose": {
+          "kind": "codegen",
+          "import": "import androidx.compose.material3.Switch",
+          "instantiation": "Switch(\n  checked = $checked,\n  onCheckedChange = { newValue -> $onCheckedChange(newValue) }\n)"
+        },
+        "runtime-react": {
+          "kind": "runtime",
+          "registry": "@missionhud/runtime-material-preview-kit",
+          "componentName": "Switch"
+        }
+      }
+    },
+    "Column": {
+      "name": "Column",
+      "description": "Vertical layout. Maps to androidx.compose.foundation.layout.Column.",
+      "category": "layout",
+      "properties": {
+        "children": { "type": "instanceSwap" }
+      },
+      "variants": {
+        "horizontalAlignment": {
+          "type": "enum",
+          "values": ["Start", "CenterHorizontally", "End"],
+          "default": "Start"
+        },
+        "verticalArrangement": {
+          "type": "enum",
+          "values": ["Top", "Center", "Bottom", "SpaceBetween", "SpaceAround", "SpaceEvenly"],
+          "default": "Top"
+        }
+      },
+      "nativeMapping": {
+        "compose": {
+          "kind": "codegen",
+          "import": "import androidx.compose.foundation.layout.Column\nimport androidx.compose.ui.Alignment\nimport androidx.compose.foundation.layout.Arrangement",
+          "instantiation": "Column(\n  horizontalAlignment = Alignment.$horizontalAlignment,\n  verticalArrangement = Arrangement.$verticalArrangement\n) {\n  $children\n}"
+        },
+        "runtime-react": {
+          "kind": "runtime",
+          "registry": "@missionhud/runtime-material-preview-kit",
+          "componentName": "Column"
+        }
+      }
+    },
+    "Row": {
+      "name": "Row",
+      "description": "Horizontal layout. Maps to androidx.compose.foundation.layout.Row.",
+      "category": "layout",
+      "properties": {
+        "children": { "type": "instanceSwap" }
+      },
+      "variants": {
+        "verticalAlignment": {
+          "type": "enum",
+          "values": ["Top", "CenterVertically", "Bottom"],
+          "default": "Top"
+        },
+        "horizontalArrangement": {
+          "type": "enum",
+          "values": ["Start", "Center", "End", "SpaceBetween", "SpaceAround", "SpaceEvenly"],
+          "default": "Start"
+        }
+      },
+      "nativeMapping": {
+        "compose": {
+          "kind": "codegen",
+          "import": "import androidx.compose.foundation.layout.Row\nimport androidx.compose.ui.Alignment\nimport androidx.compose.foundation.layout.Arrangement",
+          "instantiation": "Row(\n  verticalAlignment = Alignment.$verticalAlignment,\n  horizontalArrangement = Arrangement.$horizontalArrangement\n) {\n  $children\n}"
+        },
+        "runtime-react": {
+          "kind": "runtime",
+          "registry": "@missionhud/runtime-material-preview-kit",
+          "componentName": "Row"
+        }
+      }
+    }
+  },
+  "$extensions": {
+    "com.missionhud": {
+      "platformTarget": "Android API 26+ (Compose Material3 1.2+)",
+      "kotlinVersion": "1.9+",
+      "notes": "Native library — componentRef strings map 1:1 to Jetpack Compose Material 3 composables. Designers using the Material 3 Figma UI Kit produce AppSpecs that reference these components; Builder generates Kotlin source with zero translation loss. Each variant maps to a specific Material 3 composable variant (e.g., Card style 'elevated' → ElevatedCard composable)."
+    }
+  }
+}

@@ -1,0 +1,47 @@
+name: RFC (Request for Comments)
+description: A substantive proposal — new field, breaking change, new library kind, governance shift.
+title: "[RFC] "
+labels: [rfc]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for proposals that change the spec, the reference
+        packages' contracts, or the project's governance. Small fixes go
+        in a regular issue or PR.
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: 'What problem are you solving? Concrete use cases beat abstract goals.'
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Detailed proposal
+      description: 'Schema changes, new fields, new $defs, new behaviour. Include before/after snippets where useful.'
+    validations:
+      required: true
+
+  - type: textarea
+    id: compat
+    attributes:
+      label: Compatibility impact
+      description: 'Is this additive (safe), breaking, or migration-required? Forever Backwards Read commitment means readers must continue to handle all historical specs.'
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: 'What else did you weigh, and why is this the better trade-off?'
+
+  - type: textarea
+    id: implementation
+    attributes:
+      label: Reference implementation
+      description: 'Link to a draft PR if one exists.'

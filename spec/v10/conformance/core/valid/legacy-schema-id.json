@@ -1,0 +1,19 @@
+{
+  "$schema": "mockingbird/app-spec/v10.0.0",
+  "id": "proj_legacy",
+  "identity": { "name": "Pre-rename Spec" },
+  "libraryRefs": { "components": "missionhud-default", "icons": "material-symbols" },
+  "screens": { "content": [] },
+  "_provenance": {
+    "createdBy": "mockingbird-ai",
+    "createdAt": "2026-05-15T00:00:00.000Z",
+    "lastEditedBy": "mockingbird-ai",
+    "lastEditedAt": "2026-05-15T00:00:00.000Z",
+    "figmaNodeId": null,
+    "figmaNodeIdHistory": [],
+    "mhbId": null,
+    "mhbIdHistory": [],
+    "sourceTimeline": [{ "source": "mockingbird-ai", "at": "2026-05-15T00:00:00.000Z" }],
+    "_tombstone": null
+  }
+}

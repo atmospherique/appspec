@@ -12,12 +12,48 @@ Schema versions are tracked separately from release versions: a v10.x release ma
 
 ### Planned for v10.1.0 stable
 
-- More native library descriptors (`ios-18`, `material-3`, `apple-design-resources`) with full nativeMapping coverage
-- More runtime renderers (`@missionhud/appspec-runtime-vue`, `-svelte`, etc.)
-- Reference Figma adapter (already shipped at v10.1.0-alpha.0)
-- Reference Tailwind adapter (already shipped at v10.1.0-alpha.0)
-- Conformance test suite (Core tier first; Standard + Extended in v10.2)
+- More runtime renderers (`@missionhud/appspec-runtime-vue`, `-svelte`)
+- Standard- and Extended-tier conformance test cases
 - npm publish (the package code exists; not yet `npm publish`ed)
+
+---
+
+## [10.1.0-alpha.4] — 2026-05-21 (native library coverage + conformance + CI)
+
+Broadens nativeMapping coverage across three platforms and lands the first formal conformance harness, so external implementers can self-claim compliance against a fixed set of test vectors.
+
+### Added
+
+- **`spec/v10/libraries/ios-18.json`** — second native library descriptor. 10 SwiftUI primitives (NavigationStack, List, Section, Text, Button, TextField, Toggle, VStack, HStack, Image) with codegen target `swiftui` and runtime target `runtime-react` (via the future `@missionhud/runtime-ios-preview-kit`).
+- **`spec/v10/libraries/material-3.json`** — third native library descriptor. 10 Jetpack Compose / Material 3 primitives (Scaffold, TopAppBar, Card, Text, FilledButton, OutlinedButton, TextField, Switch, Column, Row) with codegen target `compose` and runtime target `runtime-react` (via the future `@missionhud/runtime-material-preview-kit`).
+- **`spec/v10/conformance/`** — Core-tier conformance test suite. Four valid fixtures (minimal, one-screen, multi-screen, legacy schema id) and seven invalid fixtures with `.expected.json` sidecars (missing-id, missing-provenance, missing-library-icons, bad-id-pattern, bad-schema-id, bare-componentRef). Runner at `spec/v10/conformance/run.js` supports `--tier=core` and `--json` flags. Documented self-claim process in `conformance/README.md`.
+- **`scripts/validate-library-descriptors.js`** — validates every `spec/v10/libraries/*.json` against `library-descriptor.schema.json` (Draft 2020-12 via Ajv2020). Wired as `npm run validate-libraries`.
+- **`.github/workflows/ci.yml`** — GitHub Actions CI. Runs library validation, conformance suite, and workspace tests on every push and PR to `main`.
+- **`.github/ISSUE_TEMPLATE/bug.yml`** + **`rfc.yml`** — structured issue templates. Bug template asks for area + version + reproduction; RFC template covers motivation, compatibility impact, and alternatives considered.
+- **`SECURITY.md`** — coordinated disclosure policy. Scopes what counts as a security issue (validation bypass, provenance forgery, walker escape) versus a regular bug. Supported versions: v10.x current, v9.x security-only.
+- Root `package.json` scripts: `validate-libraries`, `conformance`, and `ci` (composite of validate-libraries + conformance + workspace tests).
+
+### Coverage status
+
+| Platform | Library | Components | Codegen target | Runtime target |
+|---|---|---|---|---|
+| Web | shadcn-ui | 10 | `react` | `runtime-react` |
+| iOS | ios-18 | 10 | `swiftui` | `runtime-react` (preview kit) |
+| Android | material-3 | 10 | `compose` | `runtime-react` (preview kit) |
+
+Conformance: 4 valid + 7 invalid = 11 Core-tier fixtures, all passing against `@missionhud/appspec-validate` reference implementation.
+
+### Why this matters
+
+- External implementers (anyone building their own validator, walker, or codegen pipeline) now have an objective bar to claim conformance against — not "passes our reference implementation," but "passes a fixed, versioned set of test vectors."
+- Native mapping is no longer just a React story: SwiftUI and Compose entries prove the `nativeMapping` shape generalises across paradigms (imperative + declarative; flexbox + slot composition; constraint-based + linear layout).
+- CI enforces every PR against the same harness, so descriptor drift is caught before merge.
+
+### Not yet shipped
+
+- Standard-tier conformance (semantic checks beyond schema — broken `flow.targetScreenId`, token references, orphan screens).
+- Extended-tier conformance (multi-document migration, patch round-trips).
+- Compose / SwiftUI runtime preview kits — the descriptors declare the registry slots; the kits themselves are scheduled for a later sprint.
 
 ---
 

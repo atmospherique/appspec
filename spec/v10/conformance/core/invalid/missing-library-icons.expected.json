@@ -1,0 +1,7 @@
+{
+  "expectedValid": false,
+  "expectedErrors": [
+    { "path": "/libraryRefs", "kind": "missing-required-property", "property": "icons" }
+  ],
+  "description": "libraryRefs missing required `icons` field — conformant validator must reject."
+}

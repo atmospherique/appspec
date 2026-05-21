@@ -1,0 +1,7 @@
+{
+  "expectedValid": false,
+  "expectedErrors": [
+    { "path": "/$schema", "kind": "pattern-mismatch" }
+  ],
+  "description": "$schema value doesn't match either missionhud/appspec or mockingbird/app-spec prefix — conformant validator must reject."
+}

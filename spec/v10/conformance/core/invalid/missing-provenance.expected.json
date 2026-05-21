@@ -1,0 +1,7 @@
+{
+  "expectedValid": false,
+  "expectedErrors": [
+    { "path": "(root)", "kind": "missing-required-property", "property": "_provenance" }
+  ],
+  "description": "Root spec missing required `_provenance` envelope — conformant validator must reject."
+}
