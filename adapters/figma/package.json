@@ -1,0 +1,32 @@
+{
+  "name": "@missionhud/appspec-adapter-figma",
+  "version": "10.1.0-alpha.0",
+  "description": "Reference adapter: Figma plugin ↔ AppSpec wire format. Defines the JSON shape a Figma plugin sends/receives, plus pure validators and helpers for walking the component tree. Product-specific transforms (theme curation, AI slug mapping) live in consumers.",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "README.md"
+  ],
+  "keywords": [
+    "appspec",
+    "figma",
+    "plugin",
+    "wire-format",
+    "adapter"
+  ],
+  "author": "Atmospherique Pty Ltd",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/missionhud/appspec.git",
+    "directory": "adapters/figma"
+  },
+  "homepage": "https://github.com/missionhud/appspec/tree/main/adapters/figma",
+  "bugs": "https://github.com/missionhud/appspec/issues",
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

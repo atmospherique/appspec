@@ -1,0 +1,282 @@
+{
+  "$id": "shadcn-ui",
+  "$version": "1.0.0",
+  "$description": "shadcn/ui — copy-paste React + Tailwind component library. Native mappings target React + Tailwind (`react` codegen, `runtime-react` runtime walker) and use the standard shadcn npm imports. Components defined here are a representative subset; expand as needed.",
+  "$kind": "native",
+  "components": {
+    "Card": {
+      "name": "Card",
+      "description": "Container with shadow + border. Common parent for content groupings.",
+      "category": "layout",
+      "properties": {
+        "children": { "type": "instanceSwap", "description": "Nested children. Accepts any component instances." }
+      },
+      "nativeMapping": {
+        "react": {
+          "kind": "codegen",
+          "import": "import { Card, CardContent } from '@/components/ui/card'",
+          "instantiation": "<Card><CardContent>$children</CardContent></Card>",
+          "propertyMap": { "children": "children" }
+        },
+        "runtime-react": {
+          "kind": "runtime",
+          "registry": "@missionhud/runtime-shadcn-ui",
+          "componentName": "Card",
+          "propertyMap": { "children": "children" }
+        }
+      }
+    },
+    "Button": {
+      "name": "Button",
+      "description": "Standard action button. Supports primary, secondary, ghost, destructive variants.",
+      "category": "input",
+      "properties": {
+        "label": { "type": "text", "required": true, "description": "Button text" },
+        "disabled": { "type": "boolean", "default": false }
+      },
+      "variants": {
+        "variant": {
+          "type": "enum",
+          "values": ["default", "secondary", "ghost", "outline", "destructive", "link"],
+          "default": "default"
+        },
+        "size": {
+          "type": "enum",
+          "values": ["sm", "default", "lg", "icon"],
+          "default": "default"
+        }
+      },
+      "nativeMapping": {
+        "react": {
+          "kind": "codegen",
+          "import": "import { Button } from '@/components/ui/button'",
+          "instantiation": "<Button variant=\"$variant\" size=\"$size\" disabled={$disabled}>$label</Button>",
+          "propertyMap": { "label": "children", "disabled": "disabled" }
+        },
+        "runtime-react": {
+          "kind": "runtime",
+          "registry": "@missionhud/runtime-shadcn-ui",
+          "componentName": "Button",
+          "propertyMap": { "label": "children", "disabled": "disabled" }
+        }
+      }
+    },
+    "Input": {
+      "name": "Input",
+      "description": "Single-line text input.",
+      "category": "input",
+      "properties": {
+        "placeholder": { "type": "text" },
+        "value": { "type": "text" },
+        "disabled": { "type": "boolean", "default": false }
+      },
+      "variants": {
+        "type": {
+          "type": "enum",
+          "values": ["text", "email", "password", "number", "search", "tel", "url"],
+          "default": "text"
+        }
+      },
+      "nativeMapping": {
+        "react": {
+          "kind": "codegen",
+          "import": "import { Input } from '@/components/ui/input'",
+          "instantiation": "<Input type=\"$type\" placeholder=\"$placeholder\" defaultValue=\"$value\" disabled={$disabled} />"
+        },
+        "runtime-react": {
+          "kind": "runtime",
+          "registry": "@missionhud/runtime-shadcn-ui",
+          "componentName": "Input"
+        }
+      }
+    },
+    "Label": {
+      "name": "Label",
+      "description": "Form field label. Associates with an input via htmlFor.",
+      "category": "input",
+      "properties": {
+        "text": { "type": "text", "required": true },
+        "htmlFor": { "type": "text" }
+      },
+      "nativeMapping": {
+        "react": {
+          "kind": "codegen",
+          "import": "import { Label } from '@/components/ui/label'",
+          "instantiation": "<Label htmlFor=\"$htmlFor\">$text</Label>",
+          "propertyMap": { "text": "children" }
+        },
+        "runtime-react": {
+          "kind": "runtime",
+          "registry": "@missionhud/runtime-shadcn-ui",
+          "componentName": "Label",
+          "propertyMap": { "text": "children" }
+        }
+      }
+    },
+    "Heading": {
+      "name": "Heading",
+      "description": "Section heading. Variant controls h1 / h2 / h3 size + weight.",
+      "category": "typography",
+      "properties": {
+        "text": { "type": "text", "required": true }
+      },
+      "variants": {
+        "level": {
+          "type": "enum",
+          "values": ["h1", "h2", "h3", "h4"],
+          "default": "h2"
+        }
+      },
+      "nativeMapping": {
+        "react": {
+          "kind": "codegen",
+          "import": "",
+          "instantiation": "<$level className=\"font-semibold tracking-tight\">$text</$level>",
+          "propertyMap": { "text": "children" }
+        },
+        "runtime-react": {
+          "kind": "runtime",
+          "registry": "@missionhud/runtime-shadcn-ui",
+          "componentName": "Heading",
+          "propertyMap": { "text": "children" }
+        }
+      }
+    },
+    "Text": {
+      "name": "Text",
+      "description": "Body text. Variant controls muted / lead / small.",
+      "category": "typography",
+      "properties": {
+        "text": { "type": "text", "required": true }
+      },
+      "variants": {
+        "variant": {
+          "type": "enum",
+          "values": ["default", "muted", "lead", "small"],
+          "default": "default"
+        }
+      },
+      "nativeMapping": {
+        "react": {
+          "kind": "codegen",
+          "import": "",
+          "instantiation": "<p className=\"text-base\">$text</p>",
+          "propertyMap": { "text": "children" }
+        },
+        "runtime-react": {
+          "kind": "runtime",
+          "registry": "@missionhud/runtime-shadcn-ui",
+          "componentName": "Text",
+          "propertyMap": { "text": "children" }
+        }
+      }
+    },
+    "Badge": {
+      "name": "Badge",
+      "description": "Small pill label for status / tag display.",
+      "category": "display",
+      "properties": {
+        "label": { "type": "text", "required": true }
+      },
+      "variants": {
+        "variant": {
+          "type": "enum",
+          "values": ["default", "secondary", "destructive", "outline"],
+          "default": "default"
+        }
+      },
+      "nativeMapping": {
+        "react": {
+          "kind": "codegen",
+          "import": "import { Badge } from '@/components/ui/badge'",
+          "instantiation": "<Badge variant=\"$variant\">$label</Badge>",
+          "propertyMap": { "label": "children" }
+        },
+        "runtime-react": {
+          "kind": "runtime",
+          "registry": "@missionhud/runtime-shadcn-ui",
+          "componentName": "Badge",
+          "propertyMap": { "label": "children" }
+        }
+      }
+    },
+    "Avatar": {
+      "name": "Avatar",
+      "description": "User avatar with image + fallback initials.",
+      "category": "display",
+      "properties": {
+        "src": { "type": "url" },
+        "alt": { "type": "text" },
+        "fallback": { "type": "text", "description": "Initials shown when image fails to load" }
+      },
+      "nativeMapping": {
+        "react": {
+          "kind": "codegen",
+          "import": "import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'",
+          "instantiation": "<Avatar><AvatarImage src=\"$src\" alt=\"$alt\" /><AvatarFallback>$fallback</AvatarFallback></Avatar>"
+        },
+        "runtime-react": {
+          "kind": "runtime",
+          "registry": "@missionhud/runtime-shadcn-ui",
+          "componentName": "Avatar"
+        }
+      }
+    },
+    "Separator": {
+      "name": "Separator",
+      "description": "Horizontal or vertical visual divider.",
+      "category": "layout",
+      "properties": {},
+      "variants": {
+        "orientation": {
+          "type": "enum",
+          "values": ["horizontal", "vertical"],
+          "default": "horizontal"
+        }
+      },
+      "nativeMapping": {
+        "react": {
+          "kind": "codegen",
+          "import": "import { Separator } from '@/components/ui/separator'",
+          "instantiation": "<Separator orientation=\"$orientation\" />"
+        },
+        "runtime-react": {
+          "kind": "runtime",
+          "registry": "@missionhud/runtime-shadcn-ui",
+          "componentName": "Separator"
+        }
+      }
+    },
+    "Stack": {
+      "name": "Stack",
+      "description": "Flex container for vertical or horizontal layout. Equivalent to Figma Auto Layout.",
+      "category": "layout",
+      "properties": {
+        "children": { "type": "instanceSwap" },
+        "gap": { "type": "tokenRef", "description": "DTCG dimension token, e.g. '{dimension.spacing.md}'" }
+      },
+      "variants": {
+        "direction": { "type": "enum", "values": ["vertical", "horizontal"], "default": "vertical" }
+      },
+      "nativeMapping": {
+        "react": {
+          "kind": "codegen",
+          "import": "",
+          "instantiation": "<div className=\"flex flex-$direction gap-$gap\">$children</div>"
+        },
+        "runtime-react": {
+          "kind": "runtime",
+          "registry": "@missionhud/runtime-shadcn-ui",
+          "componentName": "Stack"
+        }
+      }
+    }
+  },
+  "$extensions": {
+    "com.missionhud": {
+      "tailwindRequired": true,
+      "shadcnVersion": "compatible-with-latest",
+      "notes": "Native library — componentRef strings map 1:1 to shadcn/ui imports. Tailwind CSS variables (--background, --foreground, etc.) are assumed to be installed and themed by the host app. AppSpec's designTokens block can drive Tailwind theme generation via @missionhud/appspec-adapter-tailwind."
+    }
+  }
+}

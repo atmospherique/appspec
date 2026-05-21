@@ -12,10 +12,49 @@ Schema versions are tracked separately from release versions: a v10.x release ma
 
 ### Planned for v10.1.0 stable
 
-- Reference adapter for Figma round-trip
-- Reference adapter for React + DTCG → Tailwind theme generation
+- More native library descriptors (`ios-18`, `material-3`, `apple-design-resources`) with full nativeMapping coverage
+- More runtime renderers (`@missionhud/appspec-runtime-vue`, `-svelte`, etc.)
+- Reference Figma adapter (already shipped at v10.1.0-alpha.0)
+- Reference Tailwind adapter (already shipped at v10.1.0-alpha.0)
 - Conformance test suite (Core tier first; Standard + Extended in v10.2)
 - npm publish (the package code exists; not yet `npm publish`ed)
+
+---
+
+## [10.1.0-alpha.3] — 2026-05-21 (library descriptors + runtime walker + streaming patches)
+
+The architectural unification: library descriptors with `nativeMapping` blocks become the universal contract that serves BOTH codegen consumers (Builder's React/SwiftUI/Compose pipelines) AND runtime consumers (the new walker), driven by the same descriptor.
+
+### Added
+
+- **`spec/v10/library-descriptor.schema.json`** — formal JSON Schema for library descriptors. Defines the `nativeMapping` table: per-component, per-target instantiation slots. Codegen targets (kind: 'codegen') emit source code; runtime targets (kind: 'runtime') refer to registered components. One descriptor → many output modes.
+- **`spec/v10/libraries/shadcn-ui.json`** — first native library descriptor. 10 components (Card, Button, Input, Label, Heading, Text, Badge, Avatar, Separator, Stack), each with mappings for both `react` (codegen) and `runtime-react` (runtime walker) targets.
+- **`@missionhud/appspec-runtime-react`** — 8th npm package. Runtime React renderer that walks an AppSpec live and mounts components via library-descriptor resolution. ~300 LOC reference impl. Exports: `createRegistry`, `createRuntime`, `<AppSpecRenderer>`, `<ScreenRenderer>`, `<ComponentRenderer>`, `useAppSpecStream` hook.
+- **`createPatchStream()` in `@missionhud/appspec-patch`** — streaming RFC 6902 compiler. LLM/agent emits ops over time, stream applies them, consumers (including the runtime walker) repaint progressively. Inspired by Vercel json-render's stream model; built over our existing patch lifecycle so provenance touching + auto-apply heuristics still apply.
+
+### Architectural significance
+
+This release crystallises **two-mode consumption** as the spec's core shape:
+
+- **Codegen mode** — AppSpec + library descriptor → source code (SwiftUI / Compose / React / Tailwind). The output runs standalone with no AppSpec runtime dependency. Builder's primary mode.
+- **Runtime mode** — AppSpec + library descriptor → live UI via the walker, repainted by streaming patches. The walker stays in the render path. New mode, enabled by this release.
+
+Both modes consume the same library descriptors. The same `nativeMapping` block carries entries for both codegen targets (e.g. `swiftui`, `compose`, `react`) and runtime targets (e.g. `runtime-react`, future `runtime-vue` / `runtime-svelte`).
+
+### What this enables
+
+- AI agents stream JSON Patches → UI updates live in the user's preview. No build step, no reload.
+- AppSpec competes with Vercel json-render's generative-UI use case while keeping its differentiators (DTCG by reference, provenance, native-platform mappings).
+- Consumers that want production code (Builder, third-party codegen tools) continue using the codegen path.
+- Consumers that want ephemeral live UI (agent dashboards, AI chat rich messages) use the runtime path.
+
+### Tested end-to-end
+
+- shadcn-ui descriptor validates against library-descriptor schema
+- Runtime walker resolves componentRef → library → registry → mounted React component
+- propertyMap correctly remaps AppSpec names to component prop names (e.g. `label` → `children` for Button)
+- Unknown componentRef falls back gracefully (or throws in strict mode)
+- `createPatchStream` applies batches in order; 4 LLM-style patches produce 4 progressive snapshots; final spec has all changes; provenance accumulated correctly
 
 ---
 

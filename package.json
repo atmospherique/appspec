@@ -11,10 +11,16 @@
   "homepage": "https://github.com/missionhud/appspec",
   "bugs": "https://github.com/missionhud/appspec/issues",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "adapters/*"
   ],
   "scripts": {
     "test": "npm test --workspaces --if-present",
     "sync-schema": "node scripts/sync-schema.js"
+  },
+  "devDependencies": {
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "react-test-renderer": "^19.2.6"
   }
 }

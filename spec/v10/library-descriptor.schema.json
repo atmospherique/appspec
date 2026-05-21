@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/missionhud/appspec/raw/main/spec/v10/library-descriptor.schema.json",
+  "title": "Mission HUD AppSpec — Library Descriptor",
+  "description": "Schema for a component library descriptor. A library descriptor enumerates the components a library exposes, their properties + variants, and (critically) the nativeMapping table that tells consumers how to materialise each component in concrete output targets — SwiftUI source, Compose source, React runtime mounting, etc. AppSpec instances reference libraries via libraryRefs.components; the descriptor IS the contract for what those references resolve to.",
+  "version": "1.0.0",
+  "type": "object",
+  "required": ["$id", "$version", "components"],
+  "additionalProperties": false,
+  "properties": {
+    "$id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "description": "Library identifier. Matches the value used in AppSpec libraryRefs.components. Examples: missionhud-default, ios-18, material-3, shadcn-ui."
+    },
+    "$version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-[a-z0-9.]+)?$",
+      "description": "Semantic version of the library descriptor."
+    },
+    "$description": {
+      "type": "string"
+    },
+    "$kind": {
+      "type": "string",
+      "enum": ["abstracted", "native"],
+      "description": "Optional. 'abstracted' = library uses synthetic component names that need translation per stack (e.g., missionhud-default/HeroCard). 'native' = library uses the target platform's actual component vocabulary so codegen + runtime can do 1:1 mapping (e.g., ios-18/NavigationStack, shadcn-ui/Card)."
+    },
+    "primitives": {
+      "type": "object",
+      "description": "Optional. Catalogue of primitive element types the library exposes (Text, Image, Stack, etc.) — used for sub-component instance-swap support.",
+      "additionalProperties": true
+    },
+    "components": {
+      "type": "object",
+      "description": "The library's components, keyed by slug. componentRef strings in AppSpec resolve as <library $id>/<slug>.",
+      "additionalProperties": { "$ref": "#/$defs/Component" }
+    },
+    "$extensions": {
+      "type": "object",
+      "description": "Vendor namespace for extension fields. Use reverse-DNS (e.g., $extensions['com.missionhud']).",
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "Component": {
+      "type": "object",
+      "description": "One component in the library — its property schema, variants, and (load-bearing) nativeMapping table.",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "description": "Human-readable display name." },
+        "description": { "type": "string" },
+        "category": { "type": "string", "description": "Optional grouping label (e.g., navigation, input, layout)." },
+        "properties": {
+          "type": "object",
+          "description": "Schema for the component's properties (slot values). Keys are property names; values describe each property's type, constraints, and default.",
+          "additionalProperties": { "$ref": "#/$defs/PropertyDefinition" }
+        },
+        "variants": {
+          "type": "object",
+          "description": "Schema for variant properties (style, size, layout flavour). Distinguished from properties because variants typically map to design-tool variant axes and to platform-specific style modifiers.",
+          "additionalProperties": { "$ref": "#/$defs/VariantDefinition" }
+        },
+        "supportsItems": {
+          "type": "boolean",
+          "description": "Whether this component accepts an items[] array (repeating pattern — ProductCard grids, FeedPostItem lists, etc.)."
+        },
+        "nativeMapping": {
+          "$ref": "#/$defs/NativeMapping",
+          "description": "How this component materialises in concrete output targets. Codegen consumers (Builder's SwiftUI/Compose pipelines) read the per-language slots. Runtime consumers (@missionhud/appspec-runtime-react walker, future Vue/Svelte walkers) read the runtime-* slots. Same descriptor serves all output modes."
+        }
+      }
+    },
+    "PropertyDefinition": {
+      "type": "object",
+      "description": "Definition of one property a component accepts.",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["text", "richText", "boolean", "number", "url", "icon", "assetRef", "instanceSwap", "tokenRef", "any"]
+        },
+        "description": { "type": "string" },
+        "default": {},
+        "required": { "type": "boolean" },
+        "instanceSwapOf": {
+          "type": "string",
+          "description": "For type='instanceSwap': the componentRef pattern (e.g., 'missionhud-default/Image') restricting what kinds of nested instances are valid here."
+        }
+      }
+    },
+    "VariantDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": { "type": "string", "enum": ["enum", "boolean"] },
+        "values": { "type": "array", "items": { "type": "string" } },
+        "default": {},
+        "description": { "type": "string" }
+      }
+    },
+    "NativeMapping": {
+      "type": "object",
+      "description": "Per-target instantiation map. Each key is a target identifier (swiftui, compose, react-native, runtime-react, etc.); the value is a NativeTarget describing how to produce that target. A component MAY ship mappings for any number of targets; consumers pick whichever target they need.",
+      "additionalProperties": { "$ref": "#/$defs/NativeTarget" },
+      "examples": [
+        {
+          "swiftui": {
+            "kind": "codegen",
+            "import": "import SwiftUI",
+            "instantiation": "NavigationStack { $children }.navigationTitle($title)",
+            "propertyMap": { "title": "title", "children": "children" }
+          },
+          "runtime-react": {
+            "kind": "runtime",
+            "registry": "@missionhud/runtime-shadcn-ui",
+            "componentName": "Card",
+            "propertyMap": { "title": "title", "children": "children" }
+          }
+        }
+      ]
+    },
+    "NativeTarget": {
+      "type": "object",
+      "description": "How a single component materialises in one concrete target.",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["codegen", "runtime"],
+          "description": "'codegen' targets emit source code (a string template a generator can fill in). 'runtime' targets refer to a runtime registry where the component is already implemented and gets mounted live."
+        },
+        "import": {
+          "type": "string",
+          "description": "Codegen targets: the import statement (or several, separated by newlines) the generator should emit at the top of the file."
+        },
+        "instantiation": {
+          "type": "string",
+          "description": "Codegen targets: a template string with $-prefixed placeholders that match AppSpec property names. Example for swiftui: 'NavigationStack { $children }.navigationTitle($title)'. Generators substitute placeholders with concrete values from each AppSpec instance."
+        },
+        "componentName": {
+          "type": "string",
+          "description": "Runtime targets: the name of the registered component to mount. The runtime walker looks this name up in its registry."
+        },
+        "registry": {
+          "type": "string",
+          "description": "Runtime targets: which registry package contains the implementation. The walker is configured with one or more registries at boot; this hint tells consumers which registry must be installed/registered for this library's components to work."
+        },
+        "propertyMap": {
+          "type": "object",
+          "description": "Optional. Maps AppSpec property names to target-specific names. Defaults to identity (AppSpec 'title' → target 'title'). Use when the target's API uses a different property name (e.g., shadcn-ui's Card might call it 'header' instead of 'title').",
+          "additionalProperties": { "type": "string" }
+        },
+        "valueTransforms": {
+          "type": "object",
+          "description": "Optional. Per-property transform expressions for values that need conversion (e.g., AppSpec stores a DTCG token ref '{color.primary}' but the target needs a literal CSS variable 'var(--color-primary)'). Each value is an expression name registered in the consumer's transform registry.",
+          "additionalProperties": { "type": "string" }
+        },
+        "$extensions": {
+          "type": "object",
+          "description": "Vendor-specific extensions for this target.",
+          "additionalProperties": true
+        }
+      }
+    }
+  }
+}

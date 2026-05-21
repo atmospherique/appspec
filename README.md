@@ -41,11 +41,22 @@ The spec is open under **CC-BY 4.0**; the reference implementation is open under
 
 **Available in this repo (v10.1.0-alpha):**
 
-- `spec/v10/schema.json` — the canonical JSON Schema
+- `spec/v10/schema.json` — the canonical AppSpec JSON Schema
+- `spec/v10/library-descriptor.schema.json` — schema for component library descriptors with `nativeMapping` blocks
 - `spec/v10/spec.md` — human-readable specification with rationale
+- `spec/v10/libraries/shadcn-ui.json` — first native library descriptor (10 components, codegen + runtime mappings)
+- 8 npm packages under `packages/`: core, provenance, validate, lint, migrate, patch (with streaming), cli, **runtime-react** (live walker)
+- 2 reference adapters under `adapters/`: tailwind (DTCG → Tailwind theme), figma (Figma plugin wire format)
 - `LICENSE-CC-BY-4.0` + `LICENSE-MIT` — dual licensing
 - `GOVERNANCE.md` — RFC process, maintainership, migration path
 - `CHANGELOG.md` — versioned history
+
+**Two consumption modes** (per v10.1.0-alpha.3):
+
+- **Codegen mode**: AppSpec + library descriptor → source code (Swift, Kotlin, React, etc.). Output runs standalone, no AppSpec dependency. Built by Builder + external tools.
+- **Runtime mode**: AppSpec + library descriptor → live UI via `@missionhud/appspec-runtime-react`. Walker stays in the render path; streaming patches enable live AI-driven UI updates without rebuilds. Inspired by (but improves on) Vercel json-render.
+
+Same library descriptors serve both. The `nativeMapping` block carries codegen targets (`swiftui`, `compose`, `react`) and runtime targets (`runtime-react`, future `runtime-vue` / `runtime-svelte`) side by side.
 
 **Landing soon (v10.1.0 stable, June 2026):**
 

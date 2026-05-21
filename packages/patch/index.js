@@ -208,12 +208,119 @@ function applyPatchToSpec(spec, operations, { source, note, mutate = false } = {
   return { newSpec, touchedNodes };
 }
 
+// ─────────────────────────────────────────────────────────────────────
+// Streaming patch compiler — for LLM-emitted patches over time
+// ─────────────────────────────────────────────────────────────────────
+
+/**
+ * Create a streaming patch compiler. Useful when an LLM (or any
+ * incremental producer) emits RFC 6902 patch operations over time and
+ * you want a runtime to repaint progressively as ops arrive.
+ *
+ * Inspired by Vercel json-render's `createSpecStreamCompiler` but
+ * operates over the existing @missionhud/appspec-patch lifecycle, so
+ * provenance touching, auto-apply heuristics, and validation hooks all
+ * apply.
+ *
+ * Usage:
+ *   const stream = createPatchStream(initialSpec, {
+ *     source: 'mockingbird-ai',
+ *     onUpdate: (newSpec, newOps) => renderer.update(newSpec)
+ *   });
+ *
+ *   // As ops arrive from an LLM, MCP server, etc:
+ *   stream.applyOps([{ op: 'replace', path: '/screens/content/0/components/0/properties/title', value: 'Hi' }]);
+ *   stream.applyOps([{ op: 'add',     path: '/screens/content/0/components/1', value: {...} }]);
+ *
+ *   // Get current state at any time:
+ *   const current = stream.getCurrent();
+ *
+ *   // Flush + finalize when stream is done:
+ *   const final = stream.flush();
+ *
+ * @param {object} initialSpec - the starting AppSpec
+ * @param {object} opts
+ * @param {string} opts.source - provenance source for all incoming patches
+ * @param {(spec: object, ops: Array) => void} [opts.onUpdate] - callback after each ops batch
+ * @param {(error: Error, ops: Array) => void} [opts.onError] - callback on per-batch failure
+ * @returns {{ applyOps: function, getCurrent: function, flush: function, getOperationsLog: function }}
+ */
+function createPatchStream(initialSpec, opts = {}) {
+  const { source, onUpdate, onError } = opts;
+  if (!source) throw new Error('createPatchStream: opts.source is required');
+
+  let current = fastJsonPatch.deepClone(initialSpec);
+  const operationsLog = [];
+
+  /**
+   * Apply a batch of RFC 6902 ops to the current spec. Failures are
+   * caught per-batch — invalid ops don't kill the stream. Each
+   * successful batch fires onUpdate.
+   */
+  function applyOps(operations, batchOpts = {}) {
+    if (!Array.isArray(operations)) {
+      const err = new Error('applyOps: operations must be an array');
+      if (onError) onError(err, operations); else throw err;
+      return { applied: false, error: err };
+    }
+    if (operations.length === 0) {
+      return { applied: true, newSpec: current, touchedNodes: [] };
+    }
+
+    try {
+      const result = applyPatchToSpec(current, operations, {
+        source,
+        note: batchOpts.note,
+        mutate: false,
+      });
+      current = result.newSpec;
+      operationsLog.push({
+        at: new Date().toISOString(),
+        operations,
+        note: batchOpts.note,
+        touchedNodes: result.touchedNodes,
+      });
+      if (onUpdate) onUpdate(current, operations);
+      return { applied: true, newSpec: current, touchedNodes: result.touchedNodes };
+    } catch (err) {
+      if (onError) onError(err, operations);
+      else throw err;
+      return { applied: false, error: err };
+    }
+  }
+
+  function getCurrent() {
+    return current;
+  }
+
+  /**
+   * Finalize the stream: return current state + total operation log.
+   * Useful for persisting the final spec + a complete audit of every
+   * patch applied during the stream's lifetime.
+   */
+  function flush() {
+    return {
+      spec: current,
+      operationsLog: [...operationsLog],
+      totalBatches: operationsLog.length,
+      totalOps: operationsLog.reduce((acc, b) => acc + b.operations.length, 0),
+    };
+  }
+
+  function getOperationsLog() {
+    return [...operationsLog];
+  }
+
+  return { applyOps, getCurrent, flush, getOperationsLog };
+}
+
 module.exports = {
   applyPatchToSpec,
   touchAffectedNodes,
   findProvenanceAncestor,
   isStructurallyAutoApplicable,
   generatePatchId,
+  createPatchStream,
   AUTO_APPLY_TRUSTED_SOURCES,
   AUTO_APPLY_MAX_OPS,
   DESTRUCTIVE_OPS,

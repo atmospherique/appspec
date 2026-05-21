@@ -1,0 +1,40 @@
+{
+  "name": "@missionhud/appspec-runtime-react",
+  "version": "10.1.0-alpha.3",
+  "description": "Mission HUD AppSpec — runtime React renderer. Walks an AppSpec live and mounts components by resolving each componentRef through its library descriptor's nativeMapping.runtime-react entry. Supports streaming patches for live AI-driven UI updates. The runtime complement to Builder's codegen pipeline.",
+  "main": "src/index.js",
+  "files": [
+    "src/",
+    "README.md"
+  ],
+  "keywords": [
+    "appspec",
+    "react",
+    "runtime",
+    "generative-ui",
+    "mission-hud"
+  ],
+  "author": "Atmospherique Pty Ltd",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/missionhud/appspec.git",
+    "directory": "packages/runtime-react"
+  },
+  "homepage": "https://github.com/missionhud/appspec/tree/main/packages/runtime-react",
+  "bugs": "https://github.com/missionhud/appspec/issues",
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "dependencies": {
+    "@missionhud/appspec-core": "^10.1.0-alpha.0",
+    "@missionhud/appspec-patch": "^10.1.0-alpha.0",
+    "@missionhud/appspec-provenance": "^10.1.0-alpha.0"
+  }
+}
