@@ -3,6 +3,10 @@
   "version": "10.1.0-alpha.0",
   "description": "Mission HUD AppSpec — Ajv-backed validator + slug expansion. Compiles the canonical v10 JSON Schema once and exposes validate() / validateAndExpand().",
   "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./expand-slugs": "./expand-slugs.js"
+  },
   "files": [
     "index.js",
     "expand-slugs.js",
