@@ -58,6 +58,18 @@ AppSpec follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html) with 
 2. **Minor versions** release as needed; aim for quarterly cadence once v10.1 ships.
 3. **Patch versions** can release immediately for typo / clarity fixes.
 
+### Recorded evolution intents (2026-08-14)
+
+Directions the maintainer has ratified, recorded here so contributors see the version mechanics up front:
+
+- **The physics dimension** (how a composition renders: `paged · framed · flowing · navigated · timed`) and
+  **archetype semantics for `ComponentInstance`** land **additively in a v10.x MINOR** — optional fields and
+  new `$defs` only; existing valid specs keep validating, and lenient v10 readers pass the new fields through.
+- **The `screens` → `surfaces` rename** changes a required Core-tier field and is therefore a **MAJOR**: it
+  waits for **v11**, under the ≥18-months commitment above.
+- **Cross-spec shared libraries** ("this AppSpec extends another AppSpec") remain out of scope until an RFC
+  (§2) lifts the spec's explicit exclusion (spec/v10, *Not in scope*).
+
 ### Forever Backwards Read
 
 > **Any tool that can read AppSpec v10 will read every future v10.x document.**
