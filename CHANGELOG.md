@@ -10,6 +10,17 @@ Schema versions are tracked separately from release versions: a v10.x release ma
 
 ## [Unreleased]
 
+### Added (schema, backward-compatible — RFC: typed navigations + routes)
+
+- `Screen.route` (optional string) — a route/deep-link path for web targets and app
+  deep-linking; screens without routes are reachable only by in-app navigation.
+- `Screen.navigatesTo` entries may now be a **typed navigation object**
+  `{ to, kind?: push | modal | replace | back | deep-link, label? }` in addition to the
+  existing bare screen-id string (which keeps meaning `kind: "push"`). Every existing
+  document remains valid; consumers that only understand strings can read `to` and ignore
+  the rest. Motivation: screen-map tooling (canvas editors, navigation linters, route/test
+  compilers) needs the navigation *kind* to be data, not convention.
+
 ### Planned for v10.1.0 stable
 
 - More runtime renderers (`@missionhud/appspec-runtime-vue`, `-svelte`)

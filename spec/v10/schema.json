@@ -598,8 +598,43 @@
         },
         "navigatesTo": {
           "type": "array",
+          "description": "Screens this screen can navigate to. Each entry is either a bare screen id (navigation kind defaults to \"push\") or a typed navigation object. Cycles are legal (back buttons, deep links).",
           "items": {
-            "type": "string"
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "A target screen id; kind defaults to \"push\"."
+              },
+              {
+                "type": "object",
+                "required": [
+                  "to"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "to": {
+                    "type": "string",
+                    "description": "The target screen id."
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "push",
+                      "modal",
+                      "replace",
+                      "back",
+                      "deep-link"
+                    ],
+                    "default": "push",
+                    "description": "The navigation kind: push (stack), modal (over a scrim), replace (no back entry), back (pop), deep-link (external cold-start entry)."
+                  },
+                  "label": {
+                    "type": "string",
+                    "description": "Optional trigger label (e.g. the button or gesture that fires this navigation)."
+                  }
+                }
+              }
+            ]
           }
         },
         "accessedFrom": {
@@ -622,6 +657,10 @@
         },
         "$extensions": {
           "$ref": "#/$defs/Extensions"
+        },
+        "route": {
+          "type": "string",
+          "description": "Optional route/deep-link path for this screen (web targets and app deep-linking), e.g. \"/m/:id/board\". Screens without routes are reachable only by in-app navigation."
         }
       },
       "required": [
